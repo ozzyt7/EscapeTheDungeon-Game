@@ -49,7 +49,7 @@ int main(){
     preGame();
     printf("Enter your username: ");
     fgets(name, sizeof(name), stdin);
-    int inputLen = strlen(name);//strcspn
+    int inputLen = strlen(name);
     if (inputLen > 0 && name[inputLen - 1] == '\n'){
         name[inputLen - 1] = '\0';
     }
