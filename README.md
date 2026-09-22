@@ -1,1 +1,1 @@
-I made a short game in C that runs in terminal. Compile the file and run it in your terminal. When playing I recommended full screen the terminal while playing to have the optimal experience viewing the game.
+I made a short game in C that runs in terminal. Please ensure you have a C compiler installed on your machine. Compile the file and run it in your terminal. When playing I recommended to full screen the terminal while playing to have the optimal experience viewing the game.
