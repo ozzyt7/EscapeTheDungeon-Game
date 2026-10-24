@@ -11,6 +11,15 @@ int firstBttl(int*, int*, int*);
 int secondBttl(int*, int*, int*);
 int thirdBttl(int*, int*, int*); 
 
+
+struct player {
+    int hp;
+    int shield;
+    int pw;
+
+};
+
+
 int playAgain(){
     while (getchar() != '\n');
     while (1){
