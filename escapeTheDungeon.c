@@ -4,20 +4,19 @@
 #include <math.h>
 #include <ctype.h>
 
-
-// returning 0 means player exits game, returning 1 means wants to restart game, returning 2 means player defeated monster and continues to next stage
-void preGame();
-int firstBttl(int*, int*, int*);
-int secondBttl(int*, int*, int*);
-int thirdBttl(int*, int*, int*); 
-
-
 struct player {
     int hp;
     int shield;
     int pw;
 
 };
+
+
+// returning 0 means player exits game, returning 1 means wants to restart game, returning 2 means player advances to next stage
+void preGame();
+int firstBttl(struct player*);
+int secondBttl(struct player*);
+int thirdBttl(struct player*); 
 
 
 int playAgain(){
@@ -66,17 +65,17 @@ int main(){
     sleep(1);
 
     while (1){ 
-        int hp = 100, shield = 0, pw = 3;
-        int *ptrPw = &pw, *ptrHp = &hp, *ptrShield = &shield;
+        struct player user = {100, 0, 3};
+        struct player *playerPtr = &user; 
 
-        int firstPhase = firstBttl(ptrHp, ptrPw, ptrShield);
+        int firstPhase = firstBttl(playerPtr);
         if (!firstPhase){
             break;
         }
         if (firstPhase == 1){
             continue;
         }
-        int secondPhase = secondBttl(ptrHp, ptrPw, ptrShield);
+        int secondPhase = secondBttl(playerPtr);
         if (!secondPhase){
             break;
         }
@@ -84,7 +83,7 @@ int main(){
             continue;
         }
 
-	    int finalPhase = thirdBttl(ptrHp, ptrPw, ptrShield);
+	    int finalPhase = thirdBttl(playerPtr);
         if (!finalPhase){
 	        break;
 	    }
@@ -100,15 +99,16 @@ int main(){
 }
 
 void preGame(){
-    printf("\nWelcome to The Cursed Dungeon!\nMonsters lurk these halls and devour whoever they encounter.\nYou are trapped and must defeat all the monsters to escape.\n");
+    printf("\n\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n| Welcome To The Cursed Dungeon!! |\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
+    printf("\nMonsters lurk these halls and devour whoever they encounter.\nYou are trapped and must defeat all the monsters to escape.\n");
     printf("There are 2 regular monsters and 1 boss monster.\nYou start with 100 health points and 3 power attacks.\n");
     printf("Basic attacks do 10 damage points and power attacks do 30 damage points.\nThe monsters only do 10 damage points.\nAfter defeating each monster you gain 100 shield points.\n\n");
 
 }
 
-int firstBttl(int *hp, int *pw, int *shield) {
+int firstBttl(struct player *pStats) {
     int input, taunt = 0, villainHp = 50, firstMsgDisplay = 1;
-    char firstMsg[50] = "HUH, YOU THINK YOU CAN BEAT ME? BRING IT!", deathMsg[50] = "WAIT I WAS BESTED?! NO, THIS CAN'T BE!!!";
+    char firstMsg[42] = "HUH, YOU THINK YOU CAN BEAT ME? BRING IT!", deathMsg[43] = "WAIT I WAS BESTED?! NO, THIS CAN'T BE!!!";
 
     printf("\nThe First Monster Approaches\n");
     sleep(1);
@@ -135,37 +135,41 @@ int firstBttl(int *hp, int *pw, int *shield) {
 	        firstMsgDisplay--;
 	    }
 	
-	    if (*hp <= 0){
+	    if ((pStats -> hp) <= 0){
             break;
         }
 
         sleep(1);
-        printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", *hp,*shield, *pw);
+        printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats -> hp, pStats -> shield, pStats -> pw);
         printf("[1] Basic Attack \t [2] Power Attack\n\nChoose your attack: ");
         if (scanf("%d", &input) != 1){
             printf("\nInvalid Input. Please choose either only 1 or 2.\n");
             while (getchar() != '\n');
             continue;
         }
-    
-        if (input == 1){
-            villainHp -= 10;
-            printf("\nYou did 10 damage to the enemy!\n\n");
-        }
-        else if (input == 2 && *pw > 0){
-            villainHp -= 30;
-            (*pw)--;
-            printf("\nYou did 30 damage to the enemy!\n\n");
-        }
-        else if (input == 2 && *pw == 0){
-            printf("\nYou are out of Power Attacks!\n");
-            taunt++;
-            continue;
-        }
-        else{
-            printf("\nYou can only do a Basic Attack or Power Attack!\n\n");
-            taunt++; 
-            continue;
+        
+        switch(input){
+            case 1:
+                villainHp -= 10;
+	        printf("\nYou did 10 damage to the enemy!\n\n");
+       	        break;
+
+	    case 2:
+                if (pStats -> pw > 0){
+		    villainHp -= 30;
+		    (pStats -> pw)--;
+                    printf("\nYou did 30 damage to the enemy!\n\n");
+	            break;
+		}
+		else{
+		    printf("\nYou are out of Power Attacks!\n");
+                    taunt++; 
+                    continue;	
+		}
+ 	    default:
+                printf("\nYou can only do a Basic Attack or Power Attack!\n\n");
+                taunt++;
+                continue;
         }
         sleep(1);
 
@@ -187,21 +191,21 @@ int firstBttl(int *hp, int *pw, int *shield) {
             }
             printf("-----\n");
             printf("\nYou defeated the monster! You gained 100 shield points!\n\n");
-            *shield += 100;
+            (pStats->shield) += 100;
 	        sleep(2);
             return 2;
         }
         printf("The monster does 10 damage to you!\n");
-        *hp -= 10;
+        (pStats -> hp) -= 10;
 
     }
     return playAgain();
 }
 
 
-int secondBttl(int *hp, int *pw, int *shield){
+int secondBttl(struct player *pStats){
     int input,n = 0, villainHp = 120, firstMsgDisplay = 1;
-    char firstMsg[70] = "HAHA!! WHAT PUNY HUMAN THINKS HE CAN CHALLENGE ME?!", deathMsg[50] = "WHAT?! HOW COULD THIS HAPPEN TO ME!!!";
+    char firstMsg[52] = "HAHA!! WHAT PUNY HUMAN THINKS HE CAN CHALLENGE ME?!", deathMsg[44] = "IMPOSSIBLE!! HOW COULD THIS HAPPEN TO ME!!!";
 
 
     printf("\nThe Second Monster Approaches\n");
@@ -239,12 +243,12 @@ int secondBttl(int *hp, int *pw, int *shield){
             firstMsgDisplay--;
         }
 
-        if (*hp <= 0){
+        if ((pStats -> hp) <= 0){
             break;
         }
-        printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", *hp,*shield, *pw);
+        printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats -> hp, pStats -> shield, pStats -> pw);
         printf("[1] Basic Attack \t [2] Power Attack\n\nChoose your attack: ");      
- 
+
         if (scanf("%d", &input) != 1){
             printf("\nInvalid Input. Please choose either only 1 or 2.\n");
             while (getchar() != '\n');
@@ -257,9 +261,9 @@ int secondBttl(int *hp, int *pw, int *shield){
                 printf("\nYou did 10 damage to the enemy!\n");
 		        break;
             case 2:
-                if (*pw > 0){
-                    villainHp -= 30;
-                    (*pw)--;
+                if (pStats -> pw > 0){
+                    villainHp -=30;
+                    (pStats -> pw)--;
                     printf("\nYou did 30 damage to the enemy!\n");
                     break;
                     
@@ -300,16 +304,16 @@ int secondBttl(int *hp, int *pw, int *shield){
             }
             printf("-----\n");
             printf("\nYou beat the monster! You gained 100 shield points!\n");
-            *shield += 100;
+            (pStats -> shield) += 100;
 	    sleep(2);
             return 2;        
         }
        
-       if (*shield > 0){
-           *shield -= 10;
+       if (pStats->shield > 0){
+           (pStats -> shield) -= 10;
         }
         else{
-           *hp -= 10;
+           (pStats -> hp) -= 10;
         }
         printf("\nThe monster does 10 damage to you!\n");
    }
@@ -317,9 +321,9 @@ int secondBttl(int *hp, int *pw, int *shield){
    return playAgain();
 }
 
-int thirdBttl(int *hp, int *pw, int *shield){
+int thirdBttl(struct player *pStats){
     int input, villainHp = 200, firstMsgDisplay = 1;
-    char firstMsg[70] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!";
+    char firstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!";
                 
     printf("\nThe Final Monster Approaches\n");
     sleep(1);   
@@ -360,11 +364,11 @@ int thirdBttl(int *hp, int *pw, int *shield){
             	firstMsgDisplay--;
         }
 
-        if (*hp <= 0){
+        if ((pStats -> hp) <= 0){
             break;
         }
 
-        printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", *hp,*shield, *pw);
+        printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats->hp, pStats->shield, pStats->pw);
         printf("[1] Basic Attack \t [2] Power Attack\n\nChoose your attack: ");
        
         if (scanf("%d", &input) != 1){
@@ -379,9 +383,9 @@ int thirdBttl(int *hp, int *pw, int *shield){
                 printf("\nYou did 10 damage to the enemy!\n");
                 break;
             case 2:
-                if (*pw > 0){
-                    villainHp -= 30;
-                    (*pw)--;
+                if ((pStats -> pw) > 0){
+                    villainHp -=30;
+                    (pStats->pw)--;
                     printf("\nYou did 30 damage to the enemy!\n");
                     break;
         
@@ -424,16 +428,16 @@ int thirdBttl(int *hp, int *pw, int *shield){
                printf("-");
            }
            printf("-----\n");
-           printf("You vanquished the monster!\n\n");
+           printf("\n\nYou vanquished the monster!\n\n");
            sleep(1);
            return 2;
         }            
                  
-        if (*shield > 0){
-           *shield -= 10;
+        if ((pStats->shield) > 0){
+           pStats->shield -= 10;
         }
         else{
-           *hp -= 10;
+           pStats->hp -= 10;
         }
         printf("\nThe monster does 10 damage to you!\n");
     }
