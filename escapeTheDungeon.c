@@ -117,10 +117,10 @@ int firstBttl(struct player *pStats) {
         sleep(1);
 	    printf("\nVillain Hp: %d\n", villainHp);
 	    printf("\t\t  -/\\--------/\\-\n");
-            printf("\t\t  |    \\  /    |\n");
-            printf("\t\t  |   -    -   |\n");
-            printf("\t\t  |  --------  |\n");  
-            printf("\t\t  --------------\n");
+        printf("\t\t  |    \\  /    |\n");
+        printf("\t\t  |   -    -   |\n");
+        printf("\t\t  |  --------  |\n");  
+        printf("\t\t  --------------\n");
      	
 	    if (firstMsgDisplay > 0){
             printf("  ---");
@@ -150,37 +150,37 @@ int firstBttl(struct player *pStats) {
         
         switch(input){
             case 1:
-                villainHp -= 10;
+            villainHp -= 10;
 	        printf("\nYou did 10 damage to the enemy!\n\n");
-       	        break;
+       	    break;
 
 	    case 2:
-                if (pStats -> pw > 0){
+            if (pStats -> pw > 0){
 		    villainHp -= 30;
 		    (pStats -> pw)--;
-                    printf("\nYou did 30 damage to the enemy!\n\n");
-	            break;
+            printf("\nYou did 30 damage to the enemy!\n\n");
+	        break;
 		}
 		else{
 		    printf("\nYou are out of Power Attacks!\n");
-                    taunt++; 
-                    continue;	
+            taunt++; 
+            continue;	
 		}
  	    default:
-                printf("\nYou can only do a Basic Attack or Power Attack!\n\n");
-                taunt++;
-                continue;
+            printf("\nYou can only do a Basic Attack or Power Attack!\n\n");
+            taunt++;
+            continue;
         }
         sleep(1);
 
         if (villainHp <= 0){
 	        printf("\t\t  -/\\--------/\\-\n");
-                printf("\t\t  |    \\  /    |\n");
-                printf("\t\t  |  \\/    \\/  |\n");
-                printf("\t\t  |  /\\    /\\  |\n");
-                printf("\t\t  |  --------  |\n");
-                printf("\t\t  --------------\n");
-                printf("   ---");
+            printf("\t\t  |    \\  /    |\n");
+            printf("\t\t  |  \\/    \\/  |\n");
+            printf("\t\t  |  /\\    /\\  |\n");
+            printf("\t\t  |  --------  |\n");
+            printf("\t\t  --------------\n");
+            printf("   ---");
 
             for (int i = 0; i < strlen(deathMsg); i++){
                 printf("-");
