@@ -53,11 +53,11 @@ int playAgain(){
 
 int main(){
     preGame();
-
     char name[100];
     printf("Enter your username: ");
     fgets(name, sizeof(name), stdin);
     int inputLen = strlen(name);
+
     if (inputLen > 0 && name[inputLen - 1] == '\n'){
         name[inputLen - 1] = '\0';
     }
@@ -67,8 +67,8 @@ int main(){
     while (1){ 
         struct player user = {100, 0, 3};
         struct player *playerPtr = &user; 
-	int atkDmg = 10, pwDmg = 30, critCount = 0;
-	int *atkPtr = &atkDmg, *pwDmgPtr = &pwDmg, *critPtr = &critCount; 
+	    int atkDmg = 10, pwDmg = 30, critCount = 0;
+	    int *atkPtr = &atkDmg, *pwDmgPtr = &pwDmg, *critPtr = &critCount; 
 
         int firstPhase = firstBttl(playerPtr, atkPtr, pwDmgPtr, critPtr);
         if (!firstPhase){
@@ -84,7 +84,6 @@ int main(){
         if (secondPhase == 1){
             continue;
         }
-
 	    int finalPhase = thirdBttl(playerPtr, atkPtr, pwDmgPtr, critPtr);
         if (!finalPhase){
 	        break;
@@ -153,31 +152,28 @@ int firstBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount) {
         
         switch(input){
             case 1:
-            if (critChance(critCount, atkDmg)){
-                villainHp -= ((*atkDmg) * 2);
-                printf("\nYou got a critical hit! You do %d damage to the enemy!\n\n", *atkDmg *2); 
-                break; 
-           
-            }
-
-            villainHp -= (*atkDmg);
-	        printf("\nYou did %d damage to the enemy!\n\n", *atkDmg);
-       	    break;
-
-	    case 2:
-            if (pStats -> pw > 0){
-                villainHp -= (*pwDmg);
-		        (pStats -> pw)--;
-                printf("\nYou did %d damage to the enemy!\n\n", *pwDmg);
-	            break;
-		}
-	    else{
-		    printf("\nYou are out of Power Attacks!\n");
-            continue;	
-		}
- 	    default:
-            printf("\nYou can only do a Basic Attack or Power Attack!\n\n");
-            continue;
+                if (critChance(critCount, atkDmg)){
+                    villainHp -= ((*atkDmg) * 2);
+                    printf("\nYou got a critical hit! You do %d damage to the enemy!\n\n", *atkDmg *2); 
+                    break; 
+                }
+                villainHp -= (*atkDmg);
+	            printf("\nYou did %d damage to the enemy!\n\n", *atkDmg);
+       	        break;
+	        case 2:
+                if (pStats -> pw > 0){
+                    villainHp -= (*pwDmg);
+		            (pStats -> pw)--;
+                    printf("\nYou did %d damage to the enemy!\n\n", *pwDmg);
+	                break;
+		        }
+	            else{
+		            printf("\nYou are out of Power Attacks!\n");
+                    continue;	
+		        }
+ 	        default:
+                printf("\nYou can only do a Basic Attack or Power Attack!\n\n");
+                continue;
         }
         sleep(1);
 
@@ -239,8 +235,8 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
         printf("\t\t        \\/           \\/\n");
         
         if (firstMsgDisplay > 0){
-   	    printf("    ---");
-	    for (int i = 0; i < strlen(firstMsg); i++){
+   	        printf("    ---");
+	        for (int i = 0; i < strlen(firstMsg); i++){
                 printf("-");
             }
             printf("-----\n    |   %s   |\n    ---", firstMsg);
@@ -265,11 +261,11 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
 
         switch (input){
             case 1:
-	        if (critChance(critCount, atkDmg)){
-		    villainHp -= *atkDmg * 2;
-		    printf("\nYou got a critical hit! You do %d damage to the enemy!\n\n", *atkDmg *2);
-		    break;
-		}
+	            if (critChance(critCount, atkDmg)){
+		            villainHp -= *atkDmg * 2;
+		            printf("\nYou got a critical hit! You do %d damage to the enemy!\n\n", *atkDmg *2);
+		            break;
+		        }   
                 villainHp -= *atkDmg;
                 printf("\nYou did %d damage to the enemy!\n", *atkDmg);
 		        break;
@@ -318,7 +314,7 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
             printf("-----\n");
             printf("\nYou beat the monster! You gained 100 shield points!\n");
             (pStats -> shield) += 100;
-	    sleep(2);
+	        sleep(2);
             return 2;        
         }
        
@@ -336,8 +332,7 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
 
 int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
     int input, villainHp = 200, firstMsgDisplay = 1;
-    char firstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!";
-                
+    char firstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!";           
     printf("\nThe Final Monster Approaches\n");
     sleep(1);   
            
@@ -365,17 +360,16 @@ int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
         
         if (firstMsgDisplay > 0){
 	        printf("        ---");
-                for (int i = 0; i < strlen(firstMsg); i++){
-          	      printf("-");
+            for (int i = 0; i < strlen(firstMsg); i++){
+                printf("-");
         	}
            	printf("-----\n        |   %s   |\n        ---", firstMsg);
-            	for (int i = 0; i < strlen(firstMsg); i++){
-                	printf("-");
-            	}
-            	printf("-----\n");
-            	firstMsgDisplay--;
+            for (int i = 0; i < strlen(firstMsg); i++){
+                printf("-");
+            }
+            printf("-----\n");
+            firstMsgDisplay--;
         }
-
         if ((pStats -> hp) <= 0){
             break;
         }
@@ -391,11 +385,11 @@ int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
 
         switch (input){
             case 1:
-	 	if (critChance(critCount, atkDmg)){
-		    villainHp -= *atkDmg *2;
-		    printf("\nYou got a critical hit! You do %d damage to the enemy!\n\n", *atkDmg *2);
-		    break;
-		}
+                if (critChance(critCount, atkDmg)){
+                    villainHp -= *atkDmg *2;
+		            printf("\nYou got a critical hit! You do %d damage to the enemy!\n\n", *atkDmg *2);
+		            break;
+		        }
                 villainHp -= *atkDmg;
                 printf("\nYou did %d damage to the enemy!\n", *atkDmg);
                 break;
@@ -411,7 +405,7 @@ int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
                     printf("\nYou are out of Power Attacks!\n");
                     continue;
                 }
-           default:  
+            default:  
                 printf("\nYou can only do Basic Attacks or Power Attacks!\n");
                 continue;
         }
