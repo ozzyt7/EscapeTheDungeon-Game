@@ -167,9 +167,9 @@ int firstBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount) {
 	    case 2:
             if (pStats -> pw > 0){
                 villainHp -= (*pwDmg);
-		(pStats -> pw)--;
+		        (pStats -> pw)--;
                 printf("\nYou did %d damage to the enemy!\n\n", *pwDmg);
-	        break;
+	            break;
 		}
 	    else{
 		    printf("\nYou are out of Power Attacks!\n");
