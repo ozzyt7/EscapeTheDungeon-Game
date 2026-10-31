@@ -4,7 +4,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <time.h>
- 
+
+// if you get multiple crit or maybe in a row the total attk damage incr, check for space in input for name, fix clearing stdin safety issue add param do pregame eDmg ehnanced
 struct player {
     int hp;
     int shield;
@@ -12,18 +13,18 @@ struct player {
 
 };
 
-// returning 0 means player exits game, returning 1 means wants to restart game, returning 2 means player advances to next stage
 void preGame();
 int firstBttl(struct player*, int*, int*, int*);
 int secondBttl(struct player*, int*, int*, int*);
 int thirdBttl(struct player*, int*, int* , int*); 
 int critChance(int*, int*);
 
+
 int playAgain(){
     while (getchar() != '\n');
     while (1){
         char usrInput[5], *c = usrInput;
-        printf("\nYou died! Play Again?\n [1] Yes  [2]No\nInput: ");
+        printf("\nYou died! Play Again?\n[1] Yes  [2] No\nInput: ");
         fgets(usrInput, sizeof(usrInput), stdin);
         if (strchr(usrInput, '\n') == NULL){
             printf("Invalid input. Please enter 1 or 2 or type yes or no!\n");
@@ -51,6 +52,7 @@ int playAgain(){
 }
 
 
+//returning 0 means player exits game, returning 1 means wants to restart game, returning 2 means player advances to next stage
 int main(){
     preGame();
     char name[100];
@@ -103,9 +105,9 @@ void preGame(){
     printf("\n\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n| Welcome To The Cursed Dungeon!! |\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
     printf("\nMonsters lurk these halls and devour whoever they encounter.\nYou are trapped and must defeat all the monsters to escape.\nAre you able to conquer the monsters\n");
     printf("Or will you like many others before you fall victim to these treacherous creatures\nThat power rests in your hands\n");
-    printf("\nHow To Play:\nThere are 3 monsters in the dungeon; 2 regular monsters and 1 boss monster.\nInput 1 for basic attacks and 2 for power attacks. Basic attacks do 10 damage points and power attacks do 30 damage points.\n");
+    printf("\nHow To Play:\nThere are 3 monsters in the dungeon: 2 regular monsters and 1 boss monster.\nInput 1 for basic attacks, 2 for power attacks and 3 for enhanced attacks. Basic attacks do 10 damage points and power attacks do 30 damage points.\n");
     printf("During each attack there is a 30%% chance it becomes a critical hit in which case the attack does double damage points.\nIf you get more than one critical hit in a single playthrough your basic attack increases by 10 damage points for each critical hit.\n");
-    printf("The monsters only do 10 damage points. After defeating each monster you gain 100 shield points.\n\n\n");
+    printf("Enhanced attack allows you to give up 30 overall health points including shield but deal 50 damage points to the monsters.\nThe monsters only do 10 damage points. After defeating each monster you gain 100 shield points.\n\n\n");
 }
 
 int firstBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount) {
@@ -143,7 +145,7 @@ int firstBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount) {
 
         sleep(1);
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats -> hp, pStats -> shield, pStats -> pw);
-        printf("[1] Basic Attack \t [2] Power Attack\n\nChoose your attack: ");
+        printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
         if (scanf("%d", &input) != 1){
             printf("\nInvalid Input. Please choose either only 1 or 2.\n");
             while (getchar() != '\n');
@@ -154,25 +156,35 @@ int firstBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount) {
             case 1:
                 if (critChance(critCount, atkDmg)){
                     villainHp -= ((*atkDmg) * 2);
-                    printf("\nYou got a critical hit! You do %d damage to the enemy!\n\n", *atkDmg *2); 
+                    printf("\nYou got a critical hit! You do %d damage points to the enemy!\n\n", *atkDmg *2); 
                     break; 
                 }
                 villainHp -= (*atkDmg);
-	            printf("\nYou did %d damage to the enemy!\n\n", *atkDmg);
+	            printf("\nYou did %d damage points to the enemy!\n\n", *atkDmg);
        	        break;
 	        case 2:
                 if (pStats -> pw > 0){
                     villainHp -= (*pwDmg);
 		            (pStats -> pw)--;
-                    printf("\nYou did %d damage to the enemy!\n\n", *pwDmg);
+                    printf("\nYou did %d damage points to the enemy!\n\n", *pwDmg);
 	                break;
 		        }
 	            else{
 		            printf("\nYou are out of Power Attacks!\n");
                     continue;	
 		        }
+         
+	    case 3:
+	      if (pStats->hp <= 30){
+	          printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
+    		  continue;
+	      }
+              pStats->hp -= 30;
+	      villainHp -= 50;
+	      printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n\n");
+              break;
  	        default:
-                printf("\nYou can only do a Basic Attack or Power Attack!\n\n");
+                printf("\nYou can only do a Basic Attack, Power Attack or Enhanced Attack!\n\n");
                 continue;
         }
         sleep(1);
@@ -194,12 +206,12 @@ int firstBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount) {
                 printf("-");
             }
             printf("-----\n");
-            printf("\nYou defeated the monster! You gained 100 shield points!\n\n");
-            (pStats->shield) += 100;
+            (pStats->shield) += 50;
+            printf("\nYou defeated the monster! You gained %d shield points!\n\n", pStats->shield);
 	        sleep(2);
             return 2;
         }
-        printf("The monster does 10 damage to you!\n");
+        printf("The monster does 10 damage points to you!\n");
         (pStats -> hp) -= 10;
 
     }
@@ -251,7 +263,7 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
             break;
         }
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats -> hp, pStats -> shield, pStats -> pw);
-        printf("[1] Basic Attack \t [2] Power Attack\n\nChoose your attack: ");      
+        printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
 
         if (scanf("%d", &input) != 1){
             printf("\nInvalid Input. Please choose either only 1 or 2.\n");
@@ -263,17 +275,17 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
             case 1:
 	            if (critChance(critCount, atkDmg)){
 		            villainHp -= *atkDmg * 2;
-		            printf("\nYou got a critical hit! You do %d damage to the enemy!\n\n", *atkDmg *2);
+		            printf("\nYou got a critical hit! You do %d damage points to the enemy!\n\n", *atkDmg *2);
 		            break;
 		        }   
                 villainHp -= *atkDmg;
-                printf("\nYou did %d damage to the enemy!\n", *atkDmg);
+                printf("\nYou did %d damage points to the enemy!\n", *atkDmg);
 		        break;
             case 2:
                 if (pStats -> pw > 0){
                     villainHp -= *pwDmg;
                     (pStats -> pw)--;
-                    printf("\nYou did %d damage to the enemy!\n", *pwDmg);
+                    printf("\nYou did %d damage points to the enemy!\n", *pwDmg);
                     break;
                     
                 }
@@ -281,8 +293,26 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
                     printf("\nYou are out of Power Attacks!\n");
                     continue;		    
                 }
+	    case 3:
+              if (pStats->hp <= 30){
+                  printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
+                  continue;
+              }
+              if (pStats->shield > 0){
+	          pStats->shield -= 30;
+                  if (pStats->shield < 0){
+		      pStats->hp += pStats->shield;
+		      pStats->shield = 0;
+		  }                   
+	      }
+              else{
+    	           pStats->hp -= 30;
+	      }
+              villainHp -= 50;
+              printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n");
+              break;
             default:
-                printf("\nYou can only do Basic Attacks or Power Attacks!\n");
+                printf("\nYou can only do Basic Attacks or Power Attacks!\n\n");
        		    continue;
         }
        sleep(1);
@@ -312,8 +342,9 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
     	    	printf("-");
             }
             printf("-----\n");
-            printf("\nYou beat the monster! You gained 100 shield points!\n");
-            (pStats -> shield) += 100;
+            (pStats->shield) += 50;
+            printf("\nYou defeated the monster! You gained 50 shield points!\n\n");
+
 	        sleep(2);
             return 2;        
         }
@@ -324,12 +355,13 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
         else{
            (pStats -> hp) -= 10;
         }
-        printf("\nThe monster does 10 damage to you!\n");
+        printf("\nThe monster does 10 damage points to you!\n");
    }
            
    return playAgain();
 }
 
+//Groob the insatiable
 int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
     int input, villainHp = 200, firstMsgDisplay = 1;
     char firstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!";           
@@ -375,7 +407,7 @@ int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
         }
 
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats->hp, pStats->shield, pStats->pw);
-        printf("[1] Basic Attack \t [2] Power Attack\n\nChoose your attack: ");
+        printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
        
         if (scanf("%d", &input) != 1){
            printf("\nInvalid Input. Please choose either only 1 or 2.\n");
@@ -405,6 +437,24 @@ int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
                     printf("\nYou are out of Power Attacks!\n");
                     continue;
                 }
+	     case 3:
+              if (pStats->hp <= 30){
+                  printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
+                  continue;
+              }
+              if (pStats->shield > 0){
+                  pStats->shield -= 30;
+                  if (pStats->shield < 0){
+                      pStats->hp += pStats->shield;  
+                      pStats->shield = 0;
+                  }
+              }
+              else{
+                   pStats->hp -= 30;
+              }
+              villainHp -= 50;
+              printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n\n");
+              break;
             default:  
                 printf("\nYou can only do Basic Attacks or Power Attacks!\n");
                 continue;
@@ -450,7 +500,7 @@ int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
         else{
            pStats->hp -= 10;
         }
-        printf("\nThe monster does 10 damage to you!\n");
+        printf("\nThe monster does 10 damage points to you!\n");
     }
   
     return playAgain();
@@ -471,3 +521,4 @@ int critChance(int *critCount, int *atkDmg){
     return 0;
   
 }
+
