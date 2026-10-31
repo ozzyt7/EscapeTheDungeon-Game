@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-// if you get multiple crit or maybe in a row the total attk damage incr, check for space in input for name, fix clearing stdin safety issue add param do pregame eDmg ehnanced
 struct player {
     int hp;
     int shield;
@@ -105,9 +104,9 @@ void preGame(){
     printf("\n\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n| Welcome To The Cursed Dungeon!! |\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
     printf("\nMonsters lurk these halls and devour whoever they encounter.\nYou are trapped and must defeat all the monsters to escape.\nAre you able to conquer the monsters\n");
     printf("Or will you like many others before you fall victim to these treacherous creatures\nThat power rests in your hands\n");
-    printf("\nHow To Play:\nThere are 3 monsters in the dungeon: 2 regular monsters and 1 boss monster.\nInput 1 for basic attacks, 2 for power attacks and 3 for enhanced attacks. Basic attacks do 10 damage points and power attacks do 30 damage points.\n");
+    printf("\nHow To Play:\nThere are 3 monsters in the dungeon: 2 regular monsters and 1 boss monster.\nEnter 1 for basic attacks, 2 for power attacks and 3 for enhanced attacks. Basic attacks do 10 damage points and power attacks do 30 damage points.\n");
     printf("During each attack there is a 30%% chance it becomes a critical hit in which case the attack does double damage points.\nIf you get more than one critical hit in a single playthrough your basic attack increases by 10 damage points for each critical hit.\n");
-    printf("Enhanced attack allows you to give up 30 overall health points including shield but deal 50 damage points to the monsters.\nThe monsters only do 10 damage points. After defeating each monster you gain 100 shield points.\n\n\n");
+    printf("Enhanced attack allows you to deal 50 damage points but you give up 30 total health including shield points.\nThe monsters only do 10 damage points. After defeating each monster you gain 100 shield points.\n\n\n");
 }
 
 int firstBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount) {
@@ -361,7 +360,6 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
    return playAgain();
 }
 
-//Groob the insatiable
 int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
     int input, villainHp = 200, firstMsgDisplay = 1;
     char firstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!";           
