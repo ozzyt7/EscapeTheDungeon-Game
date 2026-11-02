@@ -9,47 +9,25 @@ struct player {
     int hp;
     int shield;
     int pw;
+};
 
+struct monster {
+    int hp;
+    int dmg;
 };
 
 void preGame();
-int firstBttl(struct player*, int*, int*, int*);
-int secondBttl(struct player*, int*, int*, int*);
-int thirdBttl(struct player*, int*, int* , int*); 
+int firstBttl(struct player*, struct monster*, int*, int*, int*);
+int secondBttl(struct player*, struct monster*, int*, int*, int*);
+int thirdBttl(struct player*, struct monster*, int*, int* , int*); 
+int playAgain();
 int critChance(int*, int*);
-
-
-int playAgain(){
-    while (getchar() != '\n');
-    while (1){
-        char usrInput[5], *c = usrInput;
-        printf("\nYou died! Play Again?\n[1] Yes  [2] No\nInput: ");
-        fgets(usrInput, sizeof(usrInput), stdin);
-        if (strchr(usrInput, '\n') == NULL){
-            printf("Invalid input. Please enter 1 or 2 or type yes or no!\n");
-            while (getchar() != '\n');
-            continue;
-        }
-        while (*c != '\n'){
-      	    *c = tolower(*c);
-	        c++;
-        }
-
-        if (strcmp(usrInput, "yes\n") == 0 || strcmp(usrInput, "1\n") == 0 || strcmp(usrInput, "1\n  ")==0 || strcmp(usrInput, " 1\n ") == 0 
-        || strcmp(usrInput, "  1\n") == 0 || strcmp(usrInput, "1 \n") == 0 || strcmp(usrInput, "1  \n") == 0){
-            return 1;
-        }
-        if (strcmp(usrInput, "no\n") == 0 || strcmp(usrInput, " no\n") == 0 || strcmp(usrInput, "no\n ") == 0 || strcmp(usrInput, "no \n") == 0 
-        || strcmp(usrInput, "2\n") == 0 || strcmp(usrInput, "  2\n") == 0 || strcmp(usrInput, "2\n  ") == 0 || strcmp(usrInput, "2 \n") == 0 || strcmp(usrInput, "2  \n") == 0){
-            break;
-        }
-     
-        printf("Invalid input. Please enter 1 or 2 or type yes or no!");
-    }
-
-    return 0;
-}
-
+void firstMonsterDisplay();
+void firstMonsterDisplayDeath();
+void secondMonsterDisplay();
+void secondMonsterDisplayDeath();
+void thirdMonsterDisplay();
+void thirdMonsterDisplayDeath();
 
 //returning 0 means player exits game, returning 1 means wants to restart game, returning 2 means player advances to next stage
 int main(){
@@ -67,25 +45,27 @@ int main(){
 
     while (1){ 
         struct player user = {100, 0, 3};
-        struct player *playerPtr = &user; 
+        struct player *playerPtr = &user;
+        struct monster firstM = {50, 10}, secondM = {120, 10}, thirdM = {200, 10};
+        struct monster *m1 = &firstM, *m2 = &secondM, *m3 = &thirdM;
 	    int atkDmg = 10, pwDmg = 30, critCount = 0;
 	    int *atkPtr = &atkDmg, *pwDmgPtr = &pwDmg, *critPtr = &critCount; 
 
-        int firstPhase = firstBttl(playerPtr, atkPtr, pwDmgPtr, critPtr);
+        int firstPhase = firstBttl(playerPtr, m1, atkPtr, pwDmgPtr, critPtr);
         if (!firstPhase){
             break;
         }
         if (firstPhase == 1){
             continue;
         }
-        int secondPhase = secondBttl(playerPtr, atkPtr, pwDmgPtr, critPtr);
+        int secondPhase = secondBttl(playerPtr, m2, atkPtr, pwDmgPtr, critPtr);
         if (!secondPhase){
             break;
         }
         if (secondPhase == 1){
             continue;
         }
-	    int finalPhase = thirdBttl(playerPtr, atkPtr, pwDmgPtr, critPtr);
+	    int finalPhase = thirdBttl(playerPtr, m3, atkPtr, pwDmgPtr, critPtr);
         if (!finalPhase){
 	        break;
 	    }
@@ -101,7 +81,7 @@ int main(){
 }
 
 void preGame(){
-    printf("\n\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n| Welcome To The Cursed Dungeon!! |\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
+    printf("\n\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n\t\t| Welcome To The Cursed Dungeon!! |\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
     printf("\nMonsters lurk these halls and devour whoever they encounter.\nYou are trapped and must defeat all the monsters to escape.\nAre you able to conquer the monsters\n");
     printf("Or will you like many others before you fall victim to these treacherous creatures\nThat power rests in your hands\n");
     printf("\nHow To Play:\nThere are 3 monsters in the dungeon: 2 regular monsters and 1 boss monster.\nEnter 1 for basic attacks, 2 for power attacks and 3 for enhanced attacks. Basic attacks do 10 damage points and power attacks do 30 damage points.\n");
@@ -109,22 +89,28 @@ void preGame(){
     printf("Enhanced attack allows you to deal 50 damage points but you give up 30 total health including shield points.\nThe monsters only do 10 damage points. You gain shield points for defeating monsters.\n\n\n");
 }
 
-int firstBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount) {
-    int input, villainHp = 50, firstMsgDisplay = 1;
-    char firstMsg[42] = "HUH, YOU THINK YOU CAN BEAT ME? BRING IT!", deathMsg[43] = "WAIT I WAS BESTED?! NO, THIS CAN'T BE!!!";
+int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount) {
+    int input, firstMsgDisplay = 1, maxHp = monsterPtr->hp / 5;
+    char firstMsg[42] = "HUH, YOU THINK YOU CAN BEAT ME? BRING IT!", deathMsg[44] = "WAIT, I WAS BESTED?! NO, THIS CAN'T BE!!!", name[20] = "ESTREED THE ANGULAR";
 
     printf("\nThe First Monster Approaches\n");
     sleep(1);
 
     while (1){
         sleep(1);
-	    printf("\nVillain Hp: %d\n", villainHp);
-	    printf("\t\t  -/\\--------/\\-\n");
-        printf("\t\t  |    \\  /    |\n");
-        printf("\t\t  |   -    -   |\n");
-        printf("\t\t  |  --------  |\n");  
-        printf("\t\t  --------------\n");
-     	
+        printf("\n\t*-*-*-*-*-*-*-*-*-*-*-*-*-*\n\t|   %s   |\n\t*-*-*-*-*-*-*-*-*-*-*-*-*-*\n", name);
+	printf("\n               ------------\nVillain Hp: %d |", monsterPtr->hp);
+        int hpDisplay = monsterPtr->hp / 5;
+	for (int j = 0; j < hpDisplay; j++){
+            printf("#");
+        }
+        if (hpDisplay < maxHp){
+        for (int k = hpDisplay; k < maxHp; k++){
+            printf(" ");
+        }
+        }
+        printf("|  \n               ------------\n\n");
+        firstMonsterDisplay();
 	    if (firstMsgDisplay > 0){
             printf("  ---");
 	        for (int i = 0; i < strlen(firstMsg); i++){
@@ -154,18 +140,18 @@ int firstBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount) {
         switch(input){
             case 1:
                 if (critChance(critCount, atkDmg)){
-                    villainHp -= ((*atkDmg) * 2);
-                    printf("\nYou got a critical hit! You do %d damage points to the enemy!\n\n", *atkDmg *2); 
+                    monsterPtr->hp -= ((*atkDmg) * 2);
+                    printf("\nYou got a critical hit! You do %d damage points to the enemy!\n", *atkDmg *2); 
                     break; 
                 }
-                villainHp -= (*atkDmg);
-	            printf("\nYou did %d damage points to the enemy!\n\n", *atkDmg);
+                monsterPtr->hp -= (*atkDmg);
+	            printf("\nYou did %d damage points to the enemy!\n", *atkDmg);
        	        break;
 	        case 2:
                 if (pStats -> pw > 0){
-                    villainHp -= (*pwDmg);
+                    monsterPtr->hp -= (*pwDmg);
 		            (pStats -> pw)--;
-                    printf("\nYou did %d damage points to the enemy!\n\n", *pwDmg);
+                    printf("\nYou did %d damage points to the enemy!\n", *pwDmg);
 	                break;
 		        }
 	            else{
@@ -179,7 +165,7 @@ int firstBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount) {
     		  continue;
 	      }
               pStats->hp -= 30;
-	      villainHp -= 50;
+	      monsterPtr->hp -= 50;
 	      printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n\n");
               break;
  	        default:
@@ -188,13 +174,16 @@ int firstBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount) {
         }
         sleep(1);
 
-        if (villainHp <= 0){
-	        printf("\t\t  -/\\--------/\\-\n");
-            printf("\t\t  |    \\  /    |\n");
-            printf("\t\t  |  \\/    \\/  |\n");
-            printf("\t\t  |  /\\    /\\  |\n");
-            printf("\t\t  |  --------  |\n");
-            printf("\t\t  --------------\n");
+        if (monsterPtr->hp <= 0){
+            monsterPtr->hp = 0;
+            printf("\n\t*-*-*-*-*-*-*-*-*-*-*-*-*-*\n\t|   %s   |\n\t*-*-*-*-*-*-*-*-*-*-*-*-*-*\n", name);
+            printf("\n               ------------\nVillain Hp: %d  |", monsterPtr->hp);
+        int hpDisplay = monsterPtr->hp / 2;
+        for (int z = 0; z < maxHp; z++){
+            printf(" ");
+        }
+	    printf("|  \n               ------------\n\n");
+            firstMonsterDisplayDeath();
             printf("   ---");
 
             for (int i = 0; i < strlen(deathMsg); i++){
@@ -210,16 +199,16 @@ int firstBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount) {
 	        sleep(2);
             return 2;
         }
-        printf("The monster does 10 damage points to you!\n");
-        (pStats -> hp) -= 10;
+        printf("\nThe monster does %d damage points to you!\n", monsterPtr->dmg);
+        (pStats -> hp) -= monsterPtr->dmg;
 
     }
     return playAgain();
 }
 
-int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
-    int input,n = 0, villainHp = 120, firstMsgDisplay = 1;
-    char firstMsg[52] = "HAHA!! WHAT PUNY HUMAN THINKS HE CAN CHALLENGE ME?!", deathMsg[44] = "IMPOSSIBLE!! HOW COULD THIS HAPPEN TO ME!!!";
+int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount){
+    int input,n = 0, firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4;
+    char firstMsg[52] = "HAHA!! WHAT PUNY HUMAN THINKS HE CAN CHALLENGE ME?!", deathMsg[44] = "IMPOSSIBLE!! HOW COULD THIS HAPPEN TO ME!!!", name[18] = "REGIS THE TWISTED";
 
 
     printf("\nThe Second Monster Approaches\n");
@@ -227,23 +216,26 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
 
     while (1){
         sleep(1);
-        printf("\nVillainHp: %d\n", villainHp);
-        printf("\t\t        ________________\n");
-        printf("\t\t       /                \\\n");
-        printf("\t\t       \\      \\  /      /\n");
-        printf("\t\t        |   {}    {}   |\n");
-        printf("\t\t       /    {}    {}    \\\n");
-        printf("\t\t       \\   ----------   /\n");
-        printf("\t\t       |  /          \\  |\n");
-        printf("\t\t       |  \\          /  |\n");
-        printf("\t\t       |   ----------   |\n");
-        printf("\t\t       / ___  ___  ____ \\\n");
-        printf("\t\t      / /  / /   \\ \\   \\ \\\n");
-        printf("\t\t     / /  / /     \\ \\   \\ \\\n");
-        printf("\t\t     \\/  / /       \\ \\   \\/\n");
-        printf("\t\t        / /         \\ \\\n");
-        printf("\t\t        \\/           \\/\n");
+        printf("\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*\n\t\t|   %s   |\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*\n", name);
+        printf("\n                --------------------------------\nVillain Hp: %d", monsterPtr->hp);
+        int hpDisplay = monsterPtr->hp / 4;
+        if (monsterPtr->hp < 100){
+    	    printf("  |");
+	}
+	else{
+	printf(" |"); 
+	}
+        for (int j = 0; j < hpDisplay; j++){
+            printf("#");
+        }
+        if (hpDisplay < maxHp){
+        for (int k = hpDisplay; k < maxHp; k++){
+            printf(" ");
+        }
+        }
+        printf("|  \n                --------------------------------\n\n");
         
+        secondMonsterDisplay();
         if (firstMsgDisplay > 0){
    	        printf("    ---");
 	        for (int i = 0; i < strlen(firstMsg); i++){
@@ -272,16 +264,16 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
         switch (input){
             case 1:
 	            if (critChance(critCount, atkDmg)){
-		            villainHp -= *atkDmg * 2;
-		            printf("\nYou got a critical hit! You do %d damage points to the enemy!\n\n", *atkDmg *2);
+		            monsterPtr->hp -= *atkDmg * 2;
+		            printf("\nYou got a critical hit! You do %d damage points to the enemy!\n", *atkDmg *2);
 		            break;
 		        }   
-                villainHp -= *atkDmg;
+                monsterPtr->hp -= *atkDmg;
                 printf("\nYou did %d damage points to the enemy!\n", *atkDmg);
 		        break;
             case 2:
                 if (pStats -> pw > 0){
-                    villainHp -= *pwDmg;
+                    monsterPtr->hp -= *pwDmg;
                     (pStats -> pw)--;
                     printf("\nYou did %d damage points to the enemy!\n", *pwDmg);
                     break;
@@ -306,7 +298,7 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
               else{
     	           pStats->hp -= 30;
 	      }
-              villainHp -= 50;
+              monsterPtr->hp -= 50;
               printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n");
               break;
             default:
@@ -315,22 +307,16 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
         }
        sleep(1);
 
-       if (villainHp <= 0){
-            printf("\t\t       ________________\n");
-            printf("\t\t      /                \\\n");
-            printf("\t\t      \\      \\  /      /\n");
-            printf("\t\t       |   \\/    \\/   |\n");
-            printf("\t\t      /    /\\    /\\    \\\n");
-            printf("\t\t      \\   ----------   /\n");
-            printf("\t\t      |  /          \\  |\n");
-            printf("\t\t      |  \\          /  |\n");
-            printf("\t\t      |   ----------   |\n");
-            printf("\t\t      / ___  ___  ____ \\\n");
-            printf("\t\t     / /  / /   \\ \\   \\ \\\n");
-            printf("\t\t    / /  / /     \\ \\   \\ \\\n");
-            printf("\t\t    \\/  / /       \\ \\   \\/\n");
-            printf("\t\t       / /         \\ \\\n");
-            printf("\t\t       \\/           \\/\n");
+       if (monsterPtr->hp <= 0){
+            monsterPtr->hp = 0;
+            printf("\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*\n\t\t|   %s   |\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*\n", name);
+            printf("\n              --------------------------------\nVillain Hp: %d |", monsterPtr->hp);
+        int hpDisplay = monsterPtr->hp / 2;
+        for (int z = 0; z < maxHp; z++){
+            printf(" "); 
+        }
+	    printf("|  \n              --------------------------------\n\n");
+ 	    secondMonsterDisplayDeath();
             printf("         ---");
             for (int i = 0; i < strlen(deathMsg); i++){
   	    	printf("-");
@@ -348,45 +334,45 @@ int secondBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
         }
        
        if (pStats->shield > 0){
-           (pStats -> shield) -= 10;
+           (pStats -> shield) -= monsterPtr->dmg;
         }
         else{
-           (pStats -> hp) -= 10;
+           (pStats -> hp) -= monsterPtr->dmg;
         }
-        printf("\nThe monster does 10 damage points to you!\n");
+        printf("\nThe monster does %d damage points to you!\n", monsterPtr->dmg);
    }
            
    return playAgain();
 }
 
-int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
-    int input, villainHp = 200, firstMsgDisplay = 1;
-    char firstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!";           
+int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount){
+    int input, firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4;
+    char firstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!", name[22] = "GROOOB THE INSATIABLE";           
     printf("\nThe Final Monster Approaches\n");
     sleep(1);   
            
     while (1){
         sleep(1);
-        printf("\nVillainHp: %d\n", villainHp);
-        printf("\t                     ____________________________\n");
-        printf("\t  /\\                /                            \\                /\\\n");
-        printf("\t  ||                \\      _____/     \\_____     /                ||\n");
-        printf("\t  | ************     \\                          /     ************ |\n");
-        printf("\t  ************ |      \\      ???       ???     /      | ************\n");
-        printf("\t             | |      /      ???       ???     \\      | |\n");
-        printf("\t             | *******                          ******* |\n");
-        printf("\t             *********    ___________________  *********\n");
-        printf("\t                      \\   \\                 /  /\n");
-        printf("\t                      /    \\               /   \\\n");
-        printf("\t                     /      \\_____      __/     \\\n");
-        printf("\t                    /             \\    |         \\\n");
-        printf("\t                   /               |   |          \\\n");
-        printf("\t                   \\_______________|   |__________/\n");
-        printf("\t                                   | + |\n");
-        printf("\t                                   | + |\n");
-        printf("\t                                   | + |\n");
-        printf("\t                                   \\___/\n");
-        
+	printf("\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n\t\t|   %s   |\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n", name);
+        printf("\n                ----------------------------------------------------\nVillain Hp: %d", monsterPtr->hp);
+        int hpDisplay = monsterPtr->hp / 4;
+        if (monsterPtr->hp < 100){
+            printf("  |");
+        }
+        else{
+        printf(" |");
+        }
+        for (int j = 0; j < hpDisplay; j++){
+            printf("#");
+        }
+        if (hpDisplay < maxHp){
+        for (int k = hpDisplay; k < maxHp; k++){
+            printf(" ");
+        }
+        }
+        printf("|  \n                ----------------------------------------------------\n\n");
+	thirdMonsterDisplay();
+
         if (firstMsgDisplay > 0){
 	        printf("        ---");
             for (int i = 0; i < strlen(firstMsg); i++){
@@ -415,16 +401,16 @@ int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
         switch (input){
             case 1:
                 if (critChance(critCount, atkDmg)){
-                    villainHp -= *atkDmg *2;
-		            printf("\nYou got a critical hit! You do %d damage to the enemy!\n\n", *atkDmg *2);
+                    monsterPtr->hp -= *atkDmg *2;
+		            printf("\nYou got a critical hit! You do %d damage to the enemy!\n", *atkDmg *2);
 		            break;
 		        }
-                villainHp -= *atkDmg;
+                monsterPtr->hp -= *atkDmg;
                 printf("\nYou did %d damage to the enemy!\n", *atkDmg);
                 break;
             case 2:
                 if ((pStats -> pw) > 0){
-                    villainHp -= *pwDmg;
+                    monsterPtr->hp -= *pwDmg;
                     (pStats->pw)--;
                     printf("\nYou did %d damage to the enemy!\n", *pwDmg);
                     break;
@@ -449,8 +435,8 @@ int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
               else{
                    pStats->hp -= 30;
               }
-              villainHp -= 50;
-              printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n\n");
+              monsterPtr->hp -= 50;
+              printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n");
               break;
             default:  
                 printf("\nYou can only do Basic Attacks or Power Attacks!\n");
@@ -458,25 +444,17 @@ int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
         }
         sleep(1);
    
-        if (villainHp <= 0){
-           printf("\t                     ____________________________\n");
-           printf("\t  /\\                /                            \\                /\\\n");
-           printf("\t  ||                \\      _____/     \\_____     /                ||\n");
-           printf("\t  | ************     \\                          /     ************ |\n");
-           printf("\t  ************ |      \\      \\/        \\/      /      | ************\n");
-           printf("\t             | |      /      /\\        /\\      \\      | |\n");
-           printf("\t             | *******                          ******* |\n");
-           printf("\t             *********    ___________________  *********\n");
-           printf("\t                      \\   \\                 /  /\n");
-           printf("\t                      /    \\               /   \\\n");
-           printf("\t                     /      \\_____      __/     \\\n");
-           printf("\t                    /             \\    |         \\\n");
-           printf("\t                   /               |   |          \\\n");
-           printf("\t                   \\_______________|   |__________/\n");
-           printf("\t                                   | + |\n");
-           printf("\t                                   | + |\n");
-           printf("\t                                   | + |\n");
-           printf("\t                                   \\___/\n");
+        if (monsterPtr->hp <= 0){
+            monsterPtr->hp = 0;
+            printf("\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n\t\t|   %s   |\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n", name);
+            printf("\n              ----------------------------------------------------\nVillain Hp: %d |", monsterPtr->hp);
+        int hpDisplay = monsterPtr->hp / 2;
+        for (int z = 0; z < maxHp; z++){
+            printf(" ");
+        }
+            printf("|  \n              ----------------------------------------------------\n\n");
+
+ 	   thirdMonsterDisplayDeath();
            printf("              ---");
            for (int i = 0; i < strlen(deathMsg); i++){
                printf("-");
@@ -492,17 +470,49 @@ int thirdBttl(struct player *pStats, int *atkDmg, int *pwDmg, int *critCount){
         }            
                  
         if ((pStats->shield) > 0){
-           pStats->shield -= 10;
+           pStats->shield -= monsterPtr->dmg;
         }
         else{
-           pStats->hp -= 10;
+           pStats->hp -= monsterPtr->dmg;
         }
-        printf("\nThe monster does 10 damage points to you!\n");
+        printf("\nThe monster does %d damage points to you!\n", monsterPtr->dmg);
     }
   
     return playAgain();
 
 }
+
+int playAgain(){   
+    while (getchar() != '\n');
+    while (1){
+        char usrInput[5], *c = usrInput;
+        printf("\nYou died! Play Again?\n[1] Yes  [2] No\nInput: ");
+        fgets(usrInput, sizeof(usrInput), stdin);
+        if (strchr(usrInput, '\n') == NULL){
+            printf("Invalid input. Please enter 1 or 2 or type yes or no!\n");
+            while (getchar() != '\n');
+            continue;
+        }
+        while (*c != '\n'){
+            *c = tolower(*c);
+                c++;
+        }   
+  
+        if (strcmp(usrInput, "yes\n") == 0 || strcmp(usrInput, "1\n") == 0 || strcmp(usrInput, "1\n  ")==0 || strcmp(usrInput, " 1\n ") == 0
+        || strcmp(usrInput, "  1\n") == 0 || strcmp(usrInput, "1 \n") == 0 || strcmp(usrInput, "1  \n") == 0){
+            return 1;
+        }
+        if (strcmp(usrInput, "no\n") == 0 || strcmp(usrInput, " no\n") == 0 || strcmp(usrInput, "no\n ") == 0 || strcmp(usrInput, "no \n") == 0
+        || strcmp(usrInput, "2\n") == 0 || strcmp(usrInput, "  2\n") == 0 || strcmp(usrInput, "2\n  ") == 0 || strcmp(usrInput, "2 \n") == 0 || strcmp(usrInput, "2  \n") == 0){
+            break;
+        }
+
+        printf("Invalid input. Please enter 1 or 2 or type yes or no!");
+    }
+
+    return 0;
+}
+
 
 int critChance(int *critCount, int *atkDmg){
     srand(time(NULL));
@@ -519,3 +529,96 @@ int critChance(int *critCount, int *atkDmg){
   
 }
 
+void firstMonsterDisplay(){
+    printf("\t\t  -/\\--------/\\-\n");
+    printf("\t\t  |    \\  /    |\n");
+    printf("\t\t  |   -    -   |\n");
+    printf("\t\t  |  --------  |\n");
+    printf("\t\t  --------------\n");  
+}
+
+void firstMonsterDisplayDeath(){
+    printf("\n\t\t  -/\\--------/\\-\n");
+    printf("\t\t  |    \\  /    |\n");
+    printf("\t\t  |  \\/    \\/  |\n");
+    printf("\t\t  |  /\\    /\\  |\n"); 
+    printf("\t\t  |  --------  |\n");
+    printf("\t\t  --------------\n");
+}
+
+
+void secondMonsterDisplay(){
+    printf("\t\t        ________________\n");
+    printf("\t\t       /                \\\n");
+    printf("\t\t       \\      \\  /      /\n");
+    printf("\t\t        |   {}    {}   |\n");
+    printf("\t\t       /    {}    {}    \\\n");
+    printf("\t\t       \\   ----------   /\n");
+    printf("\t\t       |  /          \\  |\n");
+    printf("\t\t       |  \\          /  |\n");
+    printf("\t\t       |   ----------   |\n");
+    printf("\t\t       / ___  ___  ____ \\\n");
+    printf("\t\t      / /  / /   \\ \\   \\ \\\n");
+    printf("\t\t     / /  / /     \\ \\   \\ \\\n");
+    printf("\t\t     \\/  / /       \\ \\   \\/\n");
+    printf("\t\t        / /         \\ \\\n");
+    printf("\t\t        \\/           \\/\n");   
+}
+void secondMonsterDisplayDeath(){
+    printf("\n\t\t       ________________\n");
+    printf("\t\t      /                \\\n");
+    printf("\t\t      \\      \\  /      /\n");
+    printf("\t\t       |   \\/    \\/   |\n");
+    printf("\t\t      /    /\\    /\\    \\\n");
+    printf("\t\t      \\   ----------   /\n");
+    printf("\t\t      |  /          \\  |\n");
+    printf("\t\t      |  \\          /  |\n");
+    printf("\t\t      |   ----------   |\n");
+    printf("\t\t      / ___  ___  ____ \\\n");
+    printf("\t\t     / /  / /   \\ \\   \\ \\\n");
+    printf("\t\t    / /  / /     \\ \\   \\ \\\n");
+    printf("\t\t    \\/  / /       \\ \\   \\/\n");
+    printf("\t\t       / /         \\ \\\n");
+    printf("\t\t       \\/           \\/\n");
+}
+void thirdMonsterDisplay(){
+    printf("\t                     ____________________________\n");
+    printf("\t  /\\                /                            \\                /\\\n");
+    printf("\t  ||                \\      _____/     \\_____     /                ||\n");
+    printf("\t  | ************     \\                          /     ************ |\n");
+    printf("\t  ************ |      \\      ???       ???     /      | ************\n");
+    printf("\t             | |      /      ???       ???     \\      | |\n");
+    printf("\t             | *******                          ******* |\n");
+    printf("\t             *********    ___________________  *********\n");
+    printf("\t                      \\   \\                 /  /\n");
+    printf("\t                      /    \\               /   \\\n"); 
+    printf("\t                     /      \\_____      __/     \\\n");
+    printf("\t                    /             \\    |         \\\n");
+    printf("\t                   /               |   |          \\\n");
+    printf("\t                   \\_______________|   |__________/\n");
+    printf("\t                                   | + |\n");
+    printf("\t                                   | + |\n");
+    printf("\t                                   | + |\n");
+    printf("\t                                   \\___/\n");
+
+}
+void thirdMonsterDisplayDeath(){
+    printf("\n\t                     ____________________________\n");
+    printf("\t  /\\                /                            \\                /\\\n");
+    printf("\t  ||                \\      _____/     \\_____     /                ||\n");
+    printf("\t  | ************     \\                          /     ************ |\n");
+    printf("\t  ************ |      \\      \\/        \\/      /      | ************\n");
+    printf("\t             | |      /      /\\        /\\      \\      | |\n");
+    printf("\t             | *******                          ******* |\n");
+    printf("\t             *********    ___________________  *********\n");
+    printf("\t                      \\   \\                 /  /\n");
+    printf("\t                      /    \\               /   \\\n");
+    printf("\t                     /      \\_____      __/     \\\n");
+    printf("\t                    /             \\    |         \\\n");
+    printf("\t                   /               |   |          \\\n");
+    printf("\t                   \\_______________|   |__________/\n");
+    printf("\t                                   | + |\n");
+    printf("\t                                   | + |\n");
+    printf("\t                                   | + |\n");
+    printf("\t                                   \\___/\n");
+}
