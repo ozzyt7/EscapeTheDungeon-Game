@@ -54,7 +54,7 @@ int main(){
     }
     else{
         if (inputLen > 0 && name[inputLen - 1] == '\n'){
-        name[inputLen - 1] = '\0';
+            name[inputLen - 1] = '\0';
         }
     }
     break;
