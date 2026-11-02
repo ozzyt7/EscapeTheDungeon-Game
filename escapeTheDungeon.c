@@ -44,24 +44,23 @@ int main(){
     }
     for (int i = 0; i < inputLen; i++){
         if (isspace((unsigned char)name[i]) && name[i] != '\n'){
-	isValid++;
-        break;
+	        isValid++;
+            break;
 	}
     }
     if (isValid){
-	printf("Invalid input. Please don't include spaces.\n\n");
+	    printf("Invalid input. Please don't include spaces.\n\n");
         continue;
     }
     else{
-    if (inputLen > 0 && name[inputLen - 1] == '\n'){
+        if (inputLen > 0 && name[inputLen - 1] == '\n'){
         name[inputLen - 1] = '\0';
-    }
+        }
     }
     break;
     }
     
     printf("\n\nGood Luck on your journey %s!\n\n", name);
-    
 
     sleep(1);
 
@@ -94,8 +93,8 @@ int main(){
 	    if (finalPhase == 1){
 	        continue;
 	    }
-	 char endMsg[12] = "YOU ESCAPE!";
-         printf("\n\t\t\t*-*-*-*-*-*-*-*-*-*\n\t\t\t|   %s   |\n\t\t\t*-*-*-*-*-*-*-*-*-*\n\n", endMsg);
+	    char endMsg[12] = "YOU ESCAPE!";
+        printf("\n\t\t\t*-*-*-*-*-*-*-*-*-*\n\t\t\t|   %s   |\n\t\t\t*-*-*-*-*-*-*-*-*-*\n\n", endMsg);
 	    printf("Conratulations %s! You defeated all the monsters and escaped the dungeon! Well done!", name);
         break;
     }
@@ -122,26 +121,26 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
 
     while (1){
         sleep(1);
-	printf("\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t|   %s   |\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
-	printf("\n               -");
+	    printf("\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t|   %s   |\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
+	    printf("\n               -");
         for (int r = 0; r < maxHp + 1; r++){
-	    printf("-");
-	}
-	printf("\nVillain Hp: %d |", monsterPtr->hp);
+	        printf("-");
+	    }
+	    printf("\nVillain Hp: %d |", monsterPtr->hp);
         int hpDisplay = monsterPtr->hp / 2;
-	for (int j = 0; j < hpDisplay; j++){
+	    for (int j = 0; j < hpDisplay; j++){
             printf("#");
         }
         if (hpDisplay < maxHp){
-        for (int k = hpDisplay; k < maxHp; k++){
+            for (int k = hpDisplay; k < maxHp; k++){
             printf(" ");
         }
         }
         printf("|\n               -");
-	for (int t = 0; t < maxHp + 1; t++){
+	    for (int t = 0; t < maxHp + 1; t++){
 	    printf("-");
-	}
-	printf("\n\n");
+	    }
+	    printf("\n\n");
         firstMonsterDisplay();
 	    if (firstMsgDisplay > 0){
             printf("  ---");
@@ -164,15 +163,15 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats -> hp, pStats -> shield, pStats -> pw);
         printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
         fgets(input, sizeof(input), stdin);
-	if (strchr(input, '\n') == NULL){
-	while ((c = getchar()) != '\n' && c != EOF);
-	printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");	
-	continue;
-	}
-	if (input[0] != '1' && input[0] != '2' && input[0] != '3'){
-	printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
-        continue;
-	}
+	    if (strchr(input, '\n') == NULL){ // if input is too long for buffer clear stdin after input
+	        while ((c = getchar()) != '\n' && c != EOF);
+	        printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");	
+	        continue;
+	    }
+	    if (input[0] != '1' && input[0] != '2' && input[0] != '3'){
+	        printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
+            continue;
+	    }
 
         switch(input[0] - '0'){
             case 1:
@@ -198,13 +197,13 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
          
 	    case 3:
 	      if (pStats->hp + pStats->shield <= 30){
-	          printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
-    		  continue;
-	      }
-              pStats->hp -= 30;
-	      monsterPtr->hp -= 50;
-	      printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n\n");
-              break;
+            printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
+    		continue;
+            }
+            pStats->hp -= 30;
+	        monsterPtr->hp -= 50;
+	        printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n\n");
+            break;
  	        default:
                 printf("\nYou can only do a Basic Attack, Power Attack or Enhanced Attack!\n\n");
                 continue;
@@ -212,21 +211,21 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
         sleep(1);
         if (monsterPtr->hp <= 0){
             monsterPtr->hp = 0;
- 	    printf("\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t|   %s   |\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
-	    printf("\n               -");
-        for (int r = 0; r < maxHp + 1; r++){
-            printf("-");
-        }
-        printf("\nVillain Hp: %d  |", monsterPtr->hp);
-        int hpDisplay = monsterPtr->hp / 2;
-	 for (int z = 0; z < maxHp; z++){   
-            printf(" ");
-        }
-        printf("|\n               -");
-        for (int t = 0; t < maxHp + 1; t++){
-            printf("-");
-        }
-        printf("\n\n");
+ 	        printf("\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t|   %s   |\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
+	        printf("\n               -");
+            for (int r = 0; r < maxHp + 1; r++){
+                printf("-");
+            }
+            printf("\nVillain Hp: %d  |", monsterPtr->hp);
+            int hpDisplay = monsterPtr->hp / 2;
+	        for (int z = 0; z < maxHp; z++){   
+                printf(" ");
+            }
+            printf("|\n               -");
+            for (int t = 0; t < maxHp + 1; t++){
+                printf("-");
+            }
+            printf("\n\n");
             firstMonsterDisplayDeath();
             printf("   ---");
 
@@ -254,14 +253,13 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
     int c, firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4;
     char input[3], firstMsg[52] = "HAHA!! WHAT PUNY HUMAN THINKS HE CAN CHALLENGE ME?!", deathMsg[44] = "IMPOSSIBLE!! HOW COULD THIS HAPPEN TO ME!!!", name[18] = "REGIS THE TWISTED";
 
-
     printf("\nThe Second Monster Approaches\n");
     sleep(1);
 
     while (1){
         sleep(1);
         printf("\n\t\t  *=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t  |   %s   |\n\t\t  *=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
-	printf("\n                -");
+	    printf("\n                -");
         for (int r = 0; r < maxHp + 1; r++){   
             printf("-");
         }
@@ -269,19 +267,19 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
         int hpDisplay = monsterPtr->hp / 4;
         if (monsterPtr->hp < 100){
     	    printf("  |");
-	}
-	else{
-	printf(" |"); 
-	}
+	    }
+	    else{
+	        printf(" |"); 
+	    }
         for (int j = 0; j < hpDisplay; j++){
             printf("#");
         }
         if (hpDisplay < maxHp){
-        for (int k = hpDisplay; k < maxHp; k++){
-            printf(" ");
+            for (int k = hpDisplay; k < maxHp; k++){
+                printf(" ");
+            }
         }
-        }
-	printf("|\n                -");
+	    printf("|\n                -");
         for (int t = 0; t < maxHp + 1; t++){
             printf("-");
         }
@@ -305,15 +303,15 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
         }
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats -> hp, pStats -> shield, pStats -> pw);
         printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
-	fgets(input, sizeof(input), stdin);                    
+	    fgets(input, sizeof(input), stdin);                    
         if (strchr(input, '\n') == NULL){
-        while ((c = getchar()) != '\n' && c != EOF);
-        printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
-        continue;
+            while ((c = getchar()) != '\n' && c != EOF);
+            printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
+            continue;
         }
         if (input[0] != '1' && input[0] != '2' && input[0] != '3'){
-        printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
-        continue;
+            printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
+            continue;
         }
 
         switch (input[0] - '0'){
@@ -338,24 +336,24 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
                     printf("\nYou are out of Power Attacks!\n");
                     continue;		    
                 }
-	    case 3:
-              if (pStats->hp <= 30){
-                  printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
-                  continue;
-              }
-              if (pStats->shield > 0){
-	          pStats->shield -= 30;
-                  if (pStats->shield < 0){
-		      pStats->hp += pStats->shield;
-		      pStats->shield = 0;
-		  }                   
-	      }
-              else{
-    	           pStats->hp -= 30;
-	      }
-              monsterPtr->hp -= 50;
-              printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n");
-              break;
+	        case 3:
+                if (pStats->hp <= 30){
+                    printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
+                    continue;
+                }
+                if (pStats->shield > 0){
+	                pStats->shield -= 30;
+                    if (pStats->shield < 0){
+		                pStats->hp += pStats->shield;
+		                pStats->shield = 0;
+		            }                   
+	            }
+                else{
+                    pStats->hp -= 30;
+	            }
+                monsterPtr->hp -= 50;
+                printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n");
+                break;
             default:
                 printf("\nYou can only do Basic Attacks or Power Attacks!\n\n");
        		    continue;
@@ -364,24 +362,24 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
 
        if (monsterPtr->hp <= 0){
             monsterPtr->hp = 0;
-	    printf("\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t\t|   %s   |\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
-	printf("\n                -");
-        for (int r = 0; r < maxHp + 1; r++){
-            printf("-");
-        }
-        printf("\nVillain Hp: %d   |", monsterPtr->hp);
-	for (int z = 0; z < maxHp; z++){   
-            printf(" ");
-        }
-        printf("|\n                -"); 
-        for (int t = 0; t < maxHp + 1; t++){
-            printf("-");
-        }
-        printf("\n\n");   
- 	    secondMonsterDisplayDeath();
+	        printf("\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t\t|   %s   |\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
+	        printf("\n                -");
+            for (int r = 0; r < maxHp + 1; r++){
+                printf("-");
+            }
+            printf("\nVillain Hp: %d   |", monsterPtr->hp);
+	        for (int z = 0; z < maxHp; z++){   
+                printf(" ");
+            }
+            printf("|\n                -"); 
+            for (int t = 0; t < maxHp + 1; t++){
+                printf("-");
+            }
+            printf("\n\n");   
+ 	        secondMonsterDisplayDeath();
             printf("         ---");
             for (int i = 0; i < strlen(deathMsg); i++){
-  	    	printf("-");
+  	    	    printf("-");
             }
             printf("-----\n         |   %s   |\n         ---", deathMsg);
             for (int i = 0; i < strlen(deathMsg); i++){
@@ -416,7 +414,7 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
     while (1){
         sleep(1);
         printf("\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t\t|   %s   |\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
-	printf("\n                -");
+	    printf("\n                -");
         for (int r = 0; r < maxHp + 1; r++){
             printf("-");
         }
@@ -441,7 +439,7 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
             printf("-");
         }
         printf("\n\n");
-	thirdMonsterDisplay();
+	    thirdMonsterDisplay();
 
         if (firstMsgDisplay > 0){
 	        printf("        ---");
@@ -461,15 +459,15 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
 
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats->hp, pStats->shield, pStats->pw);
         printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
-	fgets(input, sizeof(input), stdin);                    
+	    fgets(input, sizeof(input), stdin);                    
         if (strchr(input, '\n') == NULL){
-        while ((c = getchar()) != '\n' && c != EOF);
-        printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
-        continue;
+            while ((c = getchar()) != '\n' && c != EOF);
+            printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
+            continue;
         }
         if (input[0] != '1' && input[0] != '2' && input[0] != '3'){
-        printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
-        continue;
+            printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
+            continue;
         }
               
         switch (input[0] - '0'){
@@ -494,24 +492,24 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
                     printf("\nYou are out of Power Attacks!\n");
                     continue;
                 }
-	     case 3:
-              if (pStats->hp + pStats->shield <= 30){
-                  printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
-                  continue;
-              }
-              if (pStats->shield > 0){
-                  pStats->shield -= 30;
-                  if (pStats->shield < 0){
-                      pStats->hp += pStats->shield;  
-                      pStats->shield = 0;
-                  }
-              }
-              else{
-                   pStats->hp -= 30;
-              }
-              monsterPtr->hp -= 50;
-              printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n");
-              break;
+	        case 3:
+                if (pStats->hp + pStats->shield <= 30){
+                    printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
+                    continue;
+                }
+                if (pStats->shield > 0){
+                    pStats->shield -= 30;
+                    if (pStats->shield < 0){
+                        pStats->hp += pStats->shield;  
+                        pStats->shield = 0;
+                    }
+                }
+                else{
+                    pStats->hp -= 30;
+                }
+                monsterPtr->hp -= 50;
+                printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n");
+                break;
             default:  
                 printf("\nYou can only do Basic Attacks or Power Attacks!\n");
                 continue;
@@ -521,28 +519,28 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
         if (monsterPtr->hp <= 0){
             monsterPtr->hp = 0;
             printf("\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t\t|   %s   |\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
-	 printf("\n                -");
-        for (int r = 0; r < maxHp + 1; r++){
-            printf("-");
-        }
-        printf("\nVillain Hp: %d   |", monsterPtr->hp);
-	 for (int z = 0; z < maxHp; z++){   
-            printf(" ");
-        }
-        printf("|\n                -");
-        for (int t = 0; t < maxHp + 1; t++){
-            printf("-");
-        }
-        printf("\n\n");
-	thirdMonsterDisplayDeath();
-           printf("              ---");
-           for (int i = 0; i < strlen(deathMsg); i++){
-               printf("-");
-           }
+	        printf("\n                -");
+            for (int r = 0; r < maxHp + 1; r++){
+                printf("-");
+            }
+            printf("\nVillain Hp: %d   |", monsterPtr->hp);
+	        for (int z = 0; z < maxHp; z++){   
+                printf(" ");
+            }
+            printf("|\n                -");
+            for (int t = 0; t < maxHp + 1; t++){
+                printf("-");
+            }
+            printf("\n\n");
+	        thirdMonsterDisplayDeath();
+            printf("              ---");
+            for (int i = 0; i < strlen(deathMsg); i++){
+                printf("-");
+            }
            printf("-----\n              |   %s   |\n              ---", deathMsg);
            for (int i = 0; i < strlen(deathMsg); i++){
-               printf("-");
-           }
+                printf("-");
+            }
            printf("-----\n");
            printf("\n\nYou vanquished the monster!\n\n");
            sleep(1);
@@ -550,10 +548,10 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
         }            
                  
         if ((pStats->shield) > 0){
-           pStats->shield -= monsterPtr->dmg;
+            pStats->shield -= monsterPtr->dmg;
         }
         else{
-           pStats->hp -= monsterPtr->dmg;
+            pStats->hp -= monsterPtr->dmg;
         }
         printf("\nThe monster does %d damage points to you!\n", monsterPtr->dmg);
     }
