@@ -72,6 +72,8 @@ int main(){
 	    if (finalPhase == 1){
 	        continue;
 	    }
+	 char endMsg[12] = "YOU ESCAPE!";
+         printf("\n\t\t\t*-*-*-*-*-*-*-*-*-*\n\t\t\t|   %s   |\n\t\t\t*-*-*-*-*-*-*-*-*-*\n\n", endMsg);
 	    printf("Conratulations %s! You defeated all the monsters and escaped the dungeon! Well done!", name);
         break;
     }
@@ -90,7 +92,7 @@ void preGame(){
 }
 
 int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount) {
-    int input, firstMsgDisplay = 1, maxHp = monsterPtr->hp / 5;
+    int input, firstMsgDisplay = 1, maxHp = monsterPtr->hp / 2;
     char firstMsg[42] = "HUH, YOU THINK YOU CAN BEAT ME? BRING IT!", deathMsg[44] = "WAIT, I WAS BESTED?! NO, THIS CAN'T BE!!!", name[20] = "ESTREED THE ANGULAR";
 
     printf("\nThe First Monster Approaches\n");
@@ -98,9 +100,13 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
 
     while (1){
         sleep(1);
-        printf("\n\t*-*-*-*-*-*-*-*-*-*-*-*-*-*\n\t|   %s   |\n\t*-*-*-*-*-*-*-*-*-*-*-*-*-*\n", name);
-	printf("\n               ------------\nVillain Hp: %d |", monsterPtr->hp);
-        int hpDisplay = monsterPtr->hp / 5;
+	printf("\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t|   %s   |\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
+	printf("\n               -");
+        for (int r = 0; r < maxHp + 1; r++){
+	    printf("-");
+	}
+	printf("\nVillain Hp: %d |", monsterPtr->hp);
+        int hpDisplay = monsterPtr->hp / 2;
 	for (int j = 0; j < hpDisplay; j++){
             printf("#");
         }
@@ -109,7 +115,11 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
             printf(" ");
         }
         }
-        printf("|  \n               ------------\n\n");
+        printf("|\n               -");
+	for (int t = 0; t < maxHp + 1; t++){
+	    printf("-");
+	}
+	printf("\n\n");
         firstMonsterDisplay();
 	    if (firstMsgDisplay > 0){
             printf("  ---");
@@ -160,7 +170,7 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
 		        }
          
 	    case 3:
-	      if (pStats->hp <= 30){
+	      if (pStats->hp + pStats->shield <= 30){
 	          printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
     		  continue;
 	      }
@@ -176,13 +186,24 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
 
         if (monsterPtr->hp <= 0){
             monsterPtr->hp = 0;
-            printf("\n\t*-*-*-*-*-*-*-*-*-*-*-*-*-*\n\t|   %s   |\n\t*-*-*-*-*-*-*-*-*-*-*-*-*-*\n", name);
-            printf("\n               ------------\nVillain Hp: %d  |", monsterPtr->hp);
+ 	    printf("\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t|   %s   |\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
+	    printf("\n               -");
+        for (int r = 0; r < maxHp + 1; r++){
+            printf("-");
+        }
+        printf("\nVillain Hp: %d  |", monsterPtr->hp);
         int hpDisplay = monsterPtr->hp / 2;
+	 for (int z = 0; z < maxHp; z++){   
+            printf(" ");
+        }
+        printf("|\n               -");
+        for (int t = 0; t < maxHp + 1; t++){
+            printf("-");
+        }
+        printf("\n\n");
         for (int z = 0; z < maxHp; z++){
             printf(" ");
         }
-	    printf("|  \n               ------------\n\n");
             firstMonsterDisplayDeath();
             printf("   ---");
 
@@ -216,8 +237,12 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
 
     while (1){
         sleep(1);
-        printf("\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*\n\t\t|   %s   |\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*\n", name);
-        printf("\n                --------------------------------\nVillain Hp: %d", monsterPtr->hp);
+        printf("\n\t\t  *=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t  |   %s   |\n\t\t  *=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
+	printf("\n                -");
+        for (int r = 0; r < maxHp + 1; r++){   
+            printf("-");
+        }
+        printf("\nVillain Hp: %d", monsterPtr->hp);
         int hpDisplay = monsterPtr->hp / 4;
         if (monsterPtr->hp < 100){
     	    printf("  |");
@@ -233,8 +258,11 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
             printf(" ");
         }
         }
-        printf("|  \n                --------------------------------\n\n");
-        
+	printf("|\n                -");
+        for (int t = 0; t < maxHp + 1; t++){
+            printf("-");
+        }
+        printf("\n\n");
         secondMonsterDisplay();
         if (firstMsgDisplay > 0){
    	        printf("    ---");
@@ -309,13 +337,20 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
 
        if (monsterPtr->hp <= 0){
             monsterPtr->hp = 0;
-            printf("\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*\n\t\t|   %s   |\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*\n", name);
-            printf("\n              --------------------------------\nVillain Hp: %d |", monsterPtr->hp);
-        int hpDisplay = monsterPtr->hp / 2;
-        for (int z = 0; z < maxHp; z++){
-            printf(" "); 
+	    printf("\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t\t|   %s   |\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
+	printf("\n                -");
+        for (int r = 0; r < maxHp + 1; r++){
+            printf("-");
         }
-	    printf("|  \n              --------------------------------\n\n");
+        printf("\nVillain Hp: %d   |", monsterPtr->hp);
+	for (int z = 0; z < maxHp; z++){   
+            printf(" ");
+        }
+        printf("|\n                -"); 
+        for (int t = 0; t < maxHp + 1; t++){
+            printf("-");
+        }
+        printf("\n\n");   
  	    secondMonsterDisplayDeath();
             printf("         ---");
             for (int i = 0; i < strlen(deathMsg); i++){
@@ -353,8 +388,12 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
            
     while (1){
         sleep(1);
-	printf("\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n\t\t|   %s   |\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n", name);
-        printf("\n                ----------------------------------------------------\nVillain Hp: %d", monsterPtr->hp);
+        printf("\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t\t|   %s   |\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
+	printf("\n                -");
+        for (int r = 0; r < maxHp + 1; r++){
+            printf("-");
+        }
+        printf("\nVillain Hp: %d", monsterPtr->hp);
         int hpDisplay = monsterPtr->hp / 4;
         if (monsterPtr->hp < 100){
             printf("  |");
@@ -370,7 +409,11 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
             printf(" ");
         }
         }
-        printf("|  \n                ----------------------------------------------------\n\n");
+        printf("|\n                -");
+        for (int t = 0; t < maxHp + 1; t++){
+            printf("-");
+        }
+        printf("\n\n");
 	thirdMonsterDisplay();
 
         if (firstMsgDisplay > 0){
@@ -421,7 +464,7 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
                     continue;
                 }
 	     case 3:
-              if (pStats->hp <= 30){
+              if (pStats->hp + pStats->shield <= 30){
                   printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
                   continue;
               }
@@ -446,15 +489,21 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
    
         if (monsterPtr->hp <= 0){
             monsterPtr->hp = 0;
-            printf("\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n\t\t|   %s   |\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n", name);
-            printf("\n              ----------------------------------------------------\nVillain Hp: %d |", monsterPtr->hp);
-        int hpDisplay = monsterPtr->hp / 2;
-        for (int z = 0; z < maxHp; z++){
+            printf("\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t\t|   %s   |\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
+	 printf("\n                -");
+        for (int r = 0; r < maxHp + 1; r++){
+            printf("-");
+        }
+        printf("\nVillain Hp: %d   |", monsterPtr->hp);
+	 for (int z = 0; z < maxHp; z++){   
             printf(" ");
         }
-            printf("|  \n              ----------------------------------------------------\n\n");
-
- 	   thirdMonsterDisplayDeath();
+        printf("|\n                -");
+        for (int t = 0; t < maxHp + 1; t++){
+            printf("-");
+        }
+        printf("\n\n");
+	thirdMonsterDisplayDeath();
            printf("              ---");
            for (int i = 0; i < strlen(deathMsg); i++){
                printf("-");
