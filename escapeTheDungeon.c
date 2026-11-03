@@ -42,7 +42,7 @@ int main(){
 	    //num of chars in name
             if (len > 0 && name[len - 1] == '\n') {
                 name[len - 1] = '\0';
-		len--; 
+			len--; 
                 break;
             } 
             if (len >= cap - 1){
@@ -57,13 +57,13 @@ int main(){
         }
     int isValid = 0;
     if (len == 0){
-    isValid++;
+	    	isValid++;
     }
     for (int i = 0; i < len; i++){
         if (isspace((unsigned char)name[i]) && name[i] != '\n'){
 	        isValid++;
             break;
-	}
+		}
     }
     if (isValid){
 	    printf("Invalid input. Please don't include spaces.\n\n");
