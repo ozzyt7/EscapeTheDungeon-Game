@@ -237,7 +237,7 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
                 printf("-");
             }
             printf("-----\n");
-            (pStats->shield) += 50;
+            (pStats->shield) += 30;
             printf("\nYou defeated the monster! You gained %d shield points!\n\n", pStats->shield);
 	        sleep(2);
             return 2;
@@ -362,7 +362,7 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
 
        if (monsterPtr->hp <= 0){
             monsterPtr->hp = 0;
-	        printf("\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t\t|   %s   |\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
+		printf("\n\t\t  *=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t  |   %s   |\n\t\t  *=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
 	        printf("\n                -");
             for (int r = 0; r < maxHp + 1; r++){
                 printf("-");
@@ -561,13 +561,12 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
 }
 
 int playAgain(){   
-    while (getchar() != '\n');
     while (1){
         char usrInput[5], *c = usrInput;
         printf("\nYou died! Play Again?\n[1] Yes  [2] No\nInput: ");
         fgets(usrInput, sizeof(usrInput), stdin);
         if (strchr(usrInput, '\n') == NULL){
-            printf("Invalid input. Please enter 1 or 2 or type yes or no!\n");
+            printf("Invalid input. Please enter 1 or 2, or type yes or no!\n");
             while (getchar() != '\n');
             continue;
         }
