@@ -32,17 +32,34 @@ void thirdMonsterDisplayDeath();
 //returning 0 means player exits game, returning 1 means wants to restart game, returning 2 means player advances to next stage
 int main(){
     preGame();    
-    char name[100];
-   
+    int cap = 10;
+    char *name = (char *)malloc(cap);
     while (1){
-    printf("Enter your username: ");
-    fgets(name, sizeof(name), stdin);
+        int len = 0;
+        printf("Enter your username: ");
+        while (fgets(name + len, cap - len, stdin)){
+            len += strlen(name + len);
+	    //num of chars in name
+            if (len > 0 && name[len - 1] == '\n') {
+                name[len - 1] = '\0';
+		len--; 
+                break;
+            } 
+            if (len >= cap - 1){
+                cap *= 2;
+                char *tmp = (char *)realloc(name, cap);
+                if (!tmp) {
+                    free(name);
+                    return 0;
+                }
+                name = tmp;
+            }
+        }
     int isValid = 0;
-    int inputLen = strlen(name);
-    if (name[0] == '\n'){
+    if (len == 0){
     isValid++;
     }
-    for (int i = 0; i < inputLen; i++){
+    for (int i = 0; i < len; i++){
         if (isspace((unsigned char)name[i]) && name[i] != '\n'){
 	        isValid++;
             break;
@@ -51,11 +68,6 @@ int main(){
     if (isValid){
 	    printf("Invalid input. Please don't include spaces.\n\n");
         continue;
-    }
-    else{
-        if (inputLen > 0 && name[inputLen - 1] == '\n'){
-            name[inputLen - 1] = '\0';
-        }
     }
     break;
     }
@@ -98,15 +110,15 @@ int main(){
 	    printf("Conratulations %s! You defeated all the monsters and escaped the dungeon! Well done!", name);
         break;
     }
-    
+    free(name);
     printf("\nThank you for playing!!\n\n");
     return 0;
 }
 
 void preGame(){
     printf("\n\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n\t\t| Welcome To The Cursed Dungeon!! |\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
-    printf("\nMonsters lurk these halls and devour whoever they encounter.\nYou are trapped and must defeat all the monsters to escape.\nAre you able to conquer the monsters\n");
-    printf("Or will you like many others before you fall victim to these treacherous creatures\nThat power rests in your hands\n");
+    printf("\nMonsters lurk these halls and devour whoever they encounter.\nYou are trapped and must defeat all the monsters to escape.\nAre you able to step up to the challenge and conquer the dungeon?\n");
+    printf("Or will you like many others before you fall victim to these treacherous creatures.\nThat outcome rests in your hands.\n");
     printf("\nHow To Play:\nThere are 3 monsters in the dungeon: 2 regular monsters and 1 boss monster.\nEnter 1 for basic attacks, 2 for power attacks and 3 for enhanced attacks. Basic attacks do 10 damage points and power attacks do 30 damage points.\n");
     printf("During each attack there is a 30%% chance it becomes a critical hit in which case the attack does double damage points.\nIf you get more than one critical hit in a single playthrough your basic attack increases by 10 damage points for each critical hit.\n");
     printf("Enhanced attack allows you to deal 50 damage points but you give up 30 total health including shield points.\nThe monsters only do 10 damage points. You gain shield points for defeating monsters.\n\n\n");
@@ -196,7 +208,7 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
 		        }
          
 	    case 3:
-	      if (pStats->hp + pStats->shield <= 30){
+	      if (pStats->hp <= 30){
             printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
     		continue;
             }
@@ -355,7 +367,7 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
                 printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n");
                 break;
             default:
-                printf("\nYou can only do Basic Attacks or Power Attacks!\n\n");
+                printf("\nYou can only do Basic Attack, Power Attack or Enhanced Attack!\n\n");
        		    continue;
         }
        sleep(1);
@@ -386,7 +398,7 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
     	    	printf("-");
             }
             printf("-----\n");
-            (pStats->shield) += 50;
+            (pStats->shield) += 30;
             printf("\nYou defeated the monster! You gained 50 shield points!\n\n");
 
 	        sleep(2);
@@ -511,7 +523,7 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
                 printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n");
                 break;
             default:  
-                printf("\nYou can only do Basic Attacks or Power Attacks!\n");
+                printf("\nYou can only do a Basic Attack, Power Attack or Enhanced Attack!\n");
                 continue;
         }
         sleep(1);
@@ -677,7 +689,6 @@ void thirdMonsterDisplay(){
     printf("\t                                   | + |\n");
     printf("\t                                   | + |\n");
     printf("\t                                   \\___/\n");
-
 }
 void thirdMonsterDisplayDeath(){
     printf("\t                     ____________________________\n");
