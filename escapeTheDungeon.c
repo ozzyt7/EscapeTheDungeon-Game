@@ -42,7 +42,7 @@ int main(){
 	    //num of chars in name
             if (len > 0 && name[len - 1] == '\n') {
                 name[len - 1] = '\0';
-			len--; 
+			    len--; 
                 break;
             } 
             if (len >= cap - 1){
@@ -55,6 +55,12 @@ int main(){
                 name = tmp;
             }
         }
+    
+    if (feof(stdin)){
+        free(name);
+	    printf("\nEOF encountered.\n");
+	    return 0;
+    }
     int isNotValid = 0;
     if (len == 0){
         isNotValid++;
@@ -121,7 +127,7 @@ void preGame(){
     printf("Or will you like many others before you fall victim to these treacherous creatures.\nThat outcome rests in your hands!\n");
     printf("\nHow To Play:\nThere are 3 monsters in the dungeon: 2 regular monsters and 1 boss monster.\nEnter 1 for basic attacks, 2 for power attacks and 3 for enhanced attacks. Basic attacks do 10 damage points and power attacks do 30 damage points.\n");
     printf("During each attack there is a 20%% chance it becomes a critical hit in which case the attack does double damage points.\nIf you get more than one critical hit in a single playthrough your basic attack increases by 10 damage points for each critical hit.\n");
-    printf("Enhanced attack allows you to deal 50 damage points but you give up 30 total health including shield points.\nThe monsters only do 10 damage points. You gain shield points for defeating monsters.\n\n\n");
+    printf("Enhanced attack allows you to deal 50 damage points but you lose 30 total health including shield points.\nThe monsters only do 10 damage points. You gain shield points for defeating monsters.\n\n\n");
 }
 
 int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount) {
@@ -175,16 +181,15 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats -> hp, pStats -> shield, pStats -> pw);
         printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
         fgets(input, sizeof(input), stdin);
+	    if (feof(stdin)){
+            printf("\nEOF encountered.\n");
+       		return 0;  
+   	    }
 	    if (strchr(input, '\n') == NULL){ // if input is too long for buffer clear stdin after input
 	        while ((c = getchar()) != '\n' && c != EOF);
 	        printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");	
 	        continue;
 	    }
-	    if (input[0] != '1' && input[0] != '2' && input[0] != '3'){
-	        printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
-            continue;
-	    }
-
         switch(input[0] - '0'){
             case 1:
                 if (critChance(critCount, atkDmg)){
@@ -315,13 +320,13 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
         }
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats -> hp, pStats -> shield, pStats -> pw);
         printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
-	    fgets(input, sizeof(input), stdin);                    
+	    fgets(input, sizeof(input), stdin);         
+	    if (feof(stdin)){
+            printf("\nEOF encountered.\n");
+            return 0;
+   	    }   
         if (strchr(input, '\n') == NULL){
             while ((c = getchar()) != '\n' && c != EOF);
-            printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
-            continue;
-        }
-        if (input[0] != '1' && input[0] != '2' && input[0] != '3'){
             printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
             continue;
         }
@@ -374,7 +379,7 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
 
        if (monsterPtr->hp <= 0){
             monsterPtr->hp = 0;
-		printf("\n\t\t  *=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t  |   %s   |\n\t\t  *=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
+		    printf("\n\t\t  *=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t  |   %s   |\n\t\t  *=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
 	        printf("\n                -");
             for (int r = 0; r < maxHp + 1; r++){
                 printf("-");
@@ -471,17 +476,16 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
 
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats->hp, pStats->shield, pStats->pw);
         printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
-	    fgets(input, sizeof(input), stdin);                    
+	    fgets(input, sizeof(input), stdin);         
+	    if (feof(stdin)){
+            printf("\nEOF encountered.\n");
+            return 0;
+	    }           
         if (strchr(input, '\n') == NULL){
             while ((c = getchar()) != '\n' && c != EOF);
             printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
             continue;
         }
-        if (input[0] != '1' && input[0] != '2' && input[0] != '3'){
-            printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
-            continue;
-        }
-              
         switch (input[0] - '0'){
             case 1:
                 if (critChance(critCount, atkDmg)){
