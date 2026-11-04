@@ -55,17 +55,17 @@ int main(){
                 name = tmp;
             }
         }
-    int isValid = 0;
+    int isNotValid = 0;
     if (len == 0){
-	    	isValid++;
+        isNotValid++;
     }
     for (int i = 0; i < len; i++){
         if (isspace((unsigned char)name[i]) && name[i] != '\n'){
-	        isValid++;
+	        isNotValid++;
             break;
 		}
     }
-    if (isValid){
+    if (isNotValid){
 	    printf("Invalid input. Please don't include spaces.\n\n");
         continue;
     }
@@ -118,9 +118,9 @@ int main(){
 void preGame(){
     printf("\n\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n\t\t| Welcome To The Cursed Dungeon!! |\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
     printf("\nMonsters lurk these halls and devour whoever they encounter.\nYou are trapped and must defeat all the monsters to escape.\nAre you able to step up to the challenge and conquer the dungeon?\n");
-    printf("Or will you like many others before you fall victim to these treacherous creatures.\nThat outcome rests in your hands.\n");
+    printf("Or will you like many others before you fall victim to these treacherous creatures.\nThat outcome rests in your hands!\n");
     printf("\nHow To Play:\nThere are 3 monsters in the dungeon: 2 regular monsters and 1 boss monster.\nEnter 1 for basic attacks, 2 for power attacks and 3 for enhanced attacks. Basic attacks do 10 damage points and power attacks do 30 damage points.\n");
-    printf("During each attack there is a 30%% chance it becomes a critical hit in which case the attack does double damage points.\nIf you get more than one critical hit in a single playthrough your basic attack increases by 10 damage points for each critical hit.\n");
+    printf("During each attack there is a 20%% chance it becomes a critical hit in which case the attack does double damage points.\nIf you get more than one critical hit in a single playthrough your basic attack increases by 10 damage points for each critical hit.\n");
     printf("Enhanced attack allows you to deal 50 damage points but you give up 30 total health including shield points.\nThe monsters only do 10 damage points. You gain shield points for defeating monsters.\n\n\n");
 }
 
@@ -262,7 +262,7 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
 }
 
 int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount){
-    int c, firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4;
+    int c, firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, shieldIncr = 50;
     char input[3], firstMsg[52] = "HAHA!! WHAT PUNY HUMAN THINKS HE CAN CHALLENGE ME?!", deathMsg[44] = "IMPOSSIBLE!! HOW COULD THIS HAPPEN TO ME!!!", name[18] = "REGIS THE TWISTED";
 
     printf("\nThe Second Monster Approaches\n");
@@ -398,8 +398,8 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
     	    	printf("-");
             }
             printf("-----\n");
-            (pStats->shield) += 30;
-            printf("\nYou defeated the monster! You gained 50 shield points!\n\n");
+            (pStats->shield) += shieldIncr;
+            printf("\nYou defeated the monster! You gained %d shield points!\n\n", shieldIncr);
 
 	        sleep(2);
             return 2;        
@@ -607,7 +607,7 @@ int critChance(int *critCount, int *atkDmg){
     srand(time(NULL));
     int critNum = (rand() % 10) + 1;
 
-    if (critNum > 7){
+    if (critNum > 8){
 	(*critCount)++;
         if (*critCount > 1){
 	    *atkDmg += 10;
