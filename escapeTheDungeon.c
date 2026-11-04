@@ -58,7 +58,7 @@ int main(){
     
     if (feof(stdin)){
         free(name);
-	    printf("\nEOF encountered.\n");
+	    printf("\n\nEOF encountered.\n\n");
 	    return 0;
     }
     int isNotValid = 0;
@@ -125,7 +125,7 @@ void preGame(){
     printf("\n\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n\t\t| Welcome To The Cursed Dungeon!! |\n\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
     printf("\nMonsters lurk these halls and devour whoever they encounter.\nYou are trapped and must defeat all the monsters to escape.\nAre you able to step up to the challenge and conquer the dungeon?\n");
     printf("Or will you like many others before you fall victim to these treacherous creatures.\nThat outcome rests in your hands!\n");
-    printf("\nHow To Play:\nThere are 3 monsters in the dungeon: 2 regular monsters and 1 boss monster.\nEnter 1 for basic attacks, 2 for power attacks and 3 for enhanced attacks. Basic attacks do 10 damage points and power attacks do 30 damage points.\n");
+    printf("\n\t\t\t  How To Play:\nThere are 3 monsters in the dungeon: 2 regular monsters and 1 boss monster.\nEnter 1 for basic attacks, 2 for power attacks and 3 for enhanced attacks. Basic attacks do 10 damage points and power attacks do 30 damage points.\n");
     printf("During each attack there is a 20%% chance it becomes a critical hit in which case the attack does double damage points.\nIf you get more than one critical hit in a single playthrough your basic attack increases by 10 damage points for each critical hit.\n");
     printf("Enhanced attack allows you to deal 50 damage points but you lose 30 total health including shield points.\nThe monsters only do 10 damage points. You gain shield points for defeating monsters.\n\n\n");
 }
@@ -182,7 +182,7 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
         printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
         fgets(input, sizeof(input), stdin);
 	    if (feof(stdin)){
-            printf("\nEOF encountered.\n");
+            printf("\n\nEOF encountered.\n\n");
        		return 0;  
    	    }
 	    if (strchr(input, '\n') == NULL){ // if input is too long for buffer clear stdin after input
@@ -322,7 +322,7 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
         printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
 	    fgets(input, sizeof(input), stdin);         
 	    if (feof(stdin)){
-            printf("\nEOF encountered.\n");
+            printf("\n\nEOF encountered.\n\n");
             return 0;
    	    }   
         if (strchr(input, '\n') == NULL){
@@ -478,7 +478,7 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
         printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
 	    fgets(input, sizeof(input), stdin);         
 	    if (feof(stdin)){
-            printf("\nEOF encountered.\n");
+            printf("\n\nEOF encountered.\n\n");
             return 0;
 	    }           
         if (strchr(input, '\n') == NULL){
@@ -581,8 +581,13 @@ int playAgain(){
         char usrInput[5], *c = usrInput;
         printf("\nYou died! Play Again?\n[1] Yes  [2] No\nInput: ");
         fgets(usrInput, sizeof(usrInput), stdin);
+	    if (feof(stdin)){
+            printf("\n\nEOF encountered.\n\n");
+            return 0;
+        }
+
         if (strchr(usrInput, '\n') == NULL){
-            printf("Invalid input. Please enter 1 or 2, or type yes or no!\n");
+            printf("\nInvalid input. Please enter 1 or 2, or type yes or no!\n\n");
             while (getchar() != '\n');
             continue;
         }
@@ -600,7 +605,7 @@ int playAgain(){
             break;
         }
 
-        printf("Invalid input. Please enter 1 or 2 or type yes or no!");
+        printf("\n\nInvalid input. Please enter 1 or 2 or type yes or no!\n\n");
     }
 
     return 0;
