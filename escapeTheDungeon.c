@@ -376,7 +376,7 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
 
 int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount){
     int c, firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, isFirst = 0;
-    char input[3], firstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!", name[22] = "GROOOB THE INSATIABLE", usrDthMsg[64] = "MINE! MINE! YOU'RE ALL MINE!! I WILL SAVOUR THIS TENDER MEAT!!";
+    char input[3], firstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!", name[22] = "GROOOB THE INSATIABLE", usrDthMsg[69] = "MINE! MINE! YOU'RE ALL MINEEEEEEE!! I WILL SAVOUR THIS TENDER MEAT!!";
 
     printf("\nThe Final Monster Approaches\n");
     sleep(1);   
