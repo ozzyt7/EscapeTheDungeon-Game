@@ -23,6 +23,8 @@ int thirdBttl(struct player*, struct monster*, int*, int* , int*);
 int playAgain();
 int critChance(int*, int*);
 void displayHpBar(int, int, struct monster*);
+int getInput();
+void displayMsg(int, char *);
 void firstMonsterDisplay();
 void firstMonsterDisplayDeath();
 void secondMonsterDisplay();
@@ -132,8 +134,8 @@ void preGame(){
 }
 
 int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount) {
-    int c, firstMsgDisplay = 1, maxHp = monsterPtr->hp / 2, isFirst = 1;
-    char input[3], firstMsg[42] = "HUH, YOU THINK YOU CAN BEAT ME? BRING IT!", deathMsg[44] = "WAIT, I WAS BESTED?! NO, THIS CAN'T BE!!!", name[20] = "ESTREED THE ANGULAR", usrDthMsg[43] = "HEH! YOU NEVER STOOD A CHANCE AGAINST ME!!";
+    int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 2, isFirst = 1;
+    char firstMsg[42] = "HUH, YOU THINK YOU CAN BEAT ME? BRING IT!", deathMsg[44] = "WAIT, I WAS BESTED?! NO, THIS CAN'T BE!!!", name[20] = "ESTREED THE ANGULAR", usrDthMsg[43] = "HEH! YOU NEVER STOOD A CHANCE AGAINST ME!!";
 
     printf("\nThe First Monster Approaches\n");
     sleep(1);
@@ -141,48 +143,28 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
     while (1){
         sleep(1);
 	    printf("\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t|   %s   |\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
-	displayHpBar(maxHp, isFirst, monsterPtr);
+	    displayHpBar(maxHp, isFirst, monsterPtr);
         firstMonsterDisplay();
-	    if (firstMsgDisplay > 0){
-            printf("  ---");
-	        for (int i = 0; i < strlen(firstMsg); i++){
-	            printf("-");
-	        }
-	        printf("-----\n  |   %s   |\n  ---", firstMsg);
-	        for (int i = 0; i < strlen(firstMsg); i++){ 
-                printf("-");
-            }
-	        printf("-----\n");
-	        firstMsgDisplay--;
-	    }
-	
+        if (firstMsgDisplay > 0){
+	        displayMsg(1, firstMsg);
+            firstMsgDisplay--;	
+        }
 	    if ((pStats -> hp) <= 0){
-            printf("  ---");
-            for (int i = 0; i < strlen(usrDthMsg); i++){
-                printf("-");
-            }
-            printf("-----\n  |   %s   |\n  ---", usrDthMsg);
-            for (int i = 0; i < strlen(usrDthMsg); i++){
-                printf("-");
-            }
-            printf("-----\n");
-            break;
+	        displayMsg(1, usrDthMsg);
+	        break;
         }
 
         sleep(1);
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats -> hp, pStats -> shield, pStats -> pw);
         printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
-        fgets(input, sizeof(input), stdin);
-	    if (feof(stdin)){
-            printf("\n\nEOF encountered.\n\n");
-       		return 0;  
-   	    }
-	    if (strchr(input, '\n') == NULL){ // if input is too long for buffer clear stdin after input
-	        while ((c = getchar()) != '\n' && c != EOF);
-	        printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");	
-	        continue;
+	    int input = getInput();
+	    if (input == -1){
+	        return 0;
 	    }
-        switch(input[0] - '0'){
+	    if (input == -2){
+            continue;
+        }
+        switch(input){
             case 1:
                 if (critChance(critCount, atkDmg)){
                     monsterPtr->hp -= ((*atkDmg) * 2);
@@ -223,16 +205,7 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
  	        printf("\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t|   %s   |\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
 	       displayHpBar(maxHp, isFirst, monsterPtr);
             firstMonsterDisplayDeath();
-            printf("   ---");
-
-            for (int i = 0; i < strlen(deathMsg); i++){
-                printf("-");
-            }
-            printf("-----\n   |   %s   |\n   ---", deathMsg);
-            for (int i = 0; i < strlen(deathMsg); i++){
-                printf("-");
-            }
-            printf("-----\n");
+	        displayMsg(1, deathMsg);
             (pStats->shield) += 30;
             printf("\nYou defeated the monster! You gained %d shield points!\n\n", pStats->shield);
 	        sleep(2);
@@ -246,8 +219,8 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
 }
 
 int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount){
-    int c, firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, shieldIncr = 50, isFirst = 0;
-    char input[3], firstMsg[52] = "HAHA!! WHAT PUNY HUMAN THINKS HE CAN CHALLENGE ME?!", deathMsg[44] = "IMPOSSIBLE!! HOW COULD THIS HAPPEN TO ME!!!", name[18] = "REGIS THE TWISTED", usrDthMsg[81] = "HAHA, FOOLISH MORTAL! I PITY YOUR SIMPLE-MINDEDNESS!! I DIDN'T EVEN TRY!!";
+    int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, shieldIncr = 50, isFirst = 0;
+    char firstMsg[52] = "HAHA!! WHAT PUNY HUMAN THINKS HE CAN CHALLENGE ME?!", deathMsg[44] = "IMPOSSIBLE!! HOW COULD THIS HAPPEN TO ME!!!", name[18] = "REGIS THE TWISTED", usrDthMsg[76] = "FOOLISH MORTAL! I PITY YOUR SIMPLE-MINDEDNESS!! I DIDN'T EVEN TRY!!";
 
     printf("\nThe Second Monster Approaches\n");
     sleep(1);
@@ -258,44 +231,25 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
 	    displayHpBar(maxHp, isFirst, monsterPtr);
         secondMonsterDisplay();
         if (firstMsgDisplay > 0){
-   	        printf("    ---");
-	        for (int i = 0; i < strlen(firstMsg); i++){
-                printf("-");
-            }
-            printf("-----\n    |   %s   |\n    ---", firstMsg);
-            for (int i = 0; i < strlen(firstMsg); i++){
-                printf("-");
-            }
-            printf("-----\n");
+	        displayMsg(2, firstMsg);
             firstMsgDisplay--;
         }
 
         if ((pStats -> hp) <= 0){
-            printf("    ---");
-            for (int i = 0; i < strlen(usrDthMsg); i++){
-                printf("-");
-            }
-            printf("-----\n    |   %s   |\n    ---", usrDthMsg);
-            for (int i = 0; i < strlen(usrDthMsg); i++){
-                printf("-");
-            }
-            printf("-----\n");
+	        displayMsg(2, usrDthMsg);
             break;
         }
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats -> hp, pStats -> shield, pStats -> pw);
         printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
-	    fgets(input, sizeof(input), stdin);         
-	    if (feof(stdin)){
-            printf("\n\nEOF encountered.\n\n");
+        int input = getInput();
+        if (input == -1){
             return 0;
-   	    }   
-        if (strchr(input, '\n') == NULL){
-            while ((c = getchar()) != '\n' && c != EOF);
-            printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
+        }
+        if (input == -2){
             continue;
         }
 
-        switch (input[0] - '0'){
+        switch (input){
             case 1:
 	            if (critChance(critCount, atkDmg)){
 		            monsterPtr->hp -= *atkDmg * 2;
@@ -346,15 +300,7 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
 		    printf("\n\t\t  *=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t  |   %s   |\n\t\t  *=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
 	        displayHpBar(maxHp, isFirst, monsterPtr);
  	        secondMonsterDisplayDeath();
-            printf("         ---");
-            for (int i = 0; i < strlen(deathMsg); i++){
-  	    	    printf("-");
-            }
-            printf("-----\n         |   %s   |\n         ---", deathMsg);
-            for (int i = 0; i < strlen(deathMsg); i++){
-    	    	printf("-");
-            }
-            printf("-----\n");
+            displayMsg(2, deathMsg);
             (pStats->shield) += shieldIncr;
             printf("\nYou defeated the monster! You gained %d shield points!\n\n", shieldIncr);
 
@@ -375,12 +321,11 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
 }
 
 int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount){
-    int c, firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, isFirst = 0;
-    char input[3], firstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!", name[22] = "GROOOB THE INSATIABLE", usrDthMsg[69] = "MINE! MINE! YOU'RE ALL MINEEEEEEE!! I WILL SAVOUR THIS TENDER MEAT!!";
+    int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, isFirst = 0;
+    char firstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!", name[22] = "GROOOB THE INSATIABLE", usrDthMsg[69] = "MINE! MINE! YOU'RE ALL MINEEEEEEE!! I WILL SAVOUR THIS TENDER MEAT!!";
 
     printf("\nThe Final Monster Approaches\n");
-    sleep(1);   
-           
+    sleep(1);         
     while (1){
         sleep(1);
         printf("\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t\t|   %s   |\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
@@ -388,43 +333,25 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
 	    thirdMonsterDisplay();
 
         if (firstMsgDisplay > 0){
-	        printf("        ---");
-            for (int i = 0; i < strlen(firstMsg); i++){
-                printf("-");
-        	}
-           	printf("-----\n        |   %s   |\n        ---", firstMsg);
-            for (int i = 0; i < strlen(firstMsg); i++){
-                printf("-");
-            }
-            printf("-----\n");
+            displayMsg(3, firstMsg);
             firstMsgDisplay--;
         }
         if ((pStats -> hp) <= 0){
-	        printf("        ---");
-            for (int i = 0; i < strlen(usrDthMsg); i++){
-                printf("-");
-            }
-            printf("-----\n        |   %s   |\n        ---", usrDthMsg);
-            for (int i = 0; i < strlen(usrDthMsg); i++){
-                printf("-");
-            }
-            printf("-----\n");
-            break;
+	        displayMsg(3, usrDthMsg);       
+	        break;
         }
 
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", pStats->hp, pStats->shield, pStats->pw);
         printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
-	    fgets(input, sizeof(input), stdin);         
-	    if (feof(stdin)){
-            printf("\n\nEOF encountered.\n\n");
+        int input = getInput();
+        if (input == -1){
             return 0;
-	    }           
-        if (strchr(input, '\n') == NULL){
-            while ((c = getchar()) != '\n' && c != EOF);
-            printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
+        }
+        if (input == -2){
             continue;
         }
-        switch (input[0] - '0'){
+
+        switch (input){
             case 1:
                 if (critChance(critCount, atkDmg)){
                     monsterPtr->hp -= *atkDmg *2;
@@ -473,20 +400,11 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
         if (monsterPtr->hp <= 0){
             monsterPtr->hp = 0;
             printf("\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t\t|   %s   |\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
- 	            displayHpBar(maxHp, isFirst, monsterPtr);
+ 	        displayHpBar(maxHp, isFirst, monsterPtr);
 	        thirdMonsterDisplayDeath();
-            printf("              ---");
-            for (int i = 0; i < strlen(deathMsg); i++){
-                printf("-");
-            }
-           printf("-----\n              |   %s   |\n              ---", deathMsg);
-           for (int i = 0; i < strlen(deathMsg); i++){
-                printf("-");
-            }
-           printf("-----\n");
-           printf("\n\nYou vanquished the monster!\n\n");
-           sleep(1);
-           return 2;
+            displayMsg(3, deathMsg);
+            sleep(1);
+            return 2;
         }            
                  
         if ((pStats->shield) > 0){
@@ -519,7 +437,7 @@ int playAgain(){
         }
         while (*c != '\n'){
             *c = tolower(*c);
-                c++;
+            c++;
         }   
   
         if (strcmp(usrInput, "yes\n") == 0 || strcmp(usrInput, "1\n") == 0 || strcmp(usrInput, "1\n  ")==0 || strcmp(usrInput, " 1\n ") == 0
@@ -554,53 +472,133 @@ int critChance(int *critCount, int *atkDmg){
 }
 
 void displayHpBar(int maxHp, int isFirstMonster, struct monster *mPtr){
-     int hpDisplay;
-     if (isFirstMonster){
-     hpDisplay = mPtr->hp / 2;
-     }
-     else {
-     hpDisplay = mPtr->hp / 4;
-     }
-     if (mPtr->hp >= 100){
-     printf("\n                 -");
-     }
-     else{
-     printf("\n               -");
-     }
-     for (int r = 0; r < maxHp + 1; r++){
-                printf("-");
-            }
-            printf("\nVillain Hp: %d", mPtr->hp);
+    int hpDisplay;
+    if (isFirstMonster){
+        hpDisplay = mPtr->hp / 2;
+    }
+    else {
+        hpDisplay = mPtr->hp / 4;
+    }
+    if (mPtr->hp >= 100){
+        printf("\n                 -");
+    }
+    else{
+        printf("\n               -");
+    }
+    for (int r = 0; r < maxHp + 1; r++){
+        printf("-");
+    }
+    printf("\nVillain Hp: %d", mPtr->hp);
 	if (mPtr->hp >= 100){
-            printf("  |");
-        }
-        else if (mPtr->hp < 100 && mPtr->hp >= 10){       
+        printf("  |");
+    }
+    else if (mPtr->hp < 100 && mPtr->hp >= 10){       
         printf(" |");
-        }
+    }
 	else{
-	   printf("  |");
+        printf("  |");
 	}
 
-            for (int j = 0; j < hpDisplay; j++){
-            printf("#");
-        }
-        if (hpDisplay < maxHp){
-            for (int k = hpDisplay; k < maxHp; k++){
+    for (int j = 0; j < hpDisplay; j++){
+        printf("#");
+    }
+    if (hpDisplay < maxHp){
+        for (int k = hpDisplay; k < maxHp; k++){
             printf(" ");
         }
-        }
-        if (mPtr->hp >= 100){
-     printf("|\n                 -");
-     }
-     else{  
-     printf("|\n               -");
-     }
-            for (int t = 0; t < maxHp + 1; t++){
-            printf("-");
-            }
-            printf("\n\n");
+    }
+    if (mPtr->hp >= 100){
+        printf("|\n                 -");
+    }
+    else{  
+        printf("|\n               -");
+    }
+    for (int t = 0; t < maxHp + 1; t++){
+        printf("-");
+    }
+    printf("\n\n");
 }
 
+int getInput(){
+    char input[3], c;
+    fgets(input, sizeof(input), stdin);
+
+    if (feof(stdin)){
+        printf("\n\nEOF encountered.\n\n");
+        return -1;
+    }
+    if (strchr(input, '\n') == NULL){ // if input is too long for buffer clear stdin after input
+        while ((c = getchar()) != '\n' && c != EOF);
+        printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
+        return -2;
+    }
+
+    return input[0] - '0';
+
+}
+
+void displayMsg(int monster, char *msg){
+    switch (monster){
+        case 1:
+            printf("  ");
+            break;
+        case 2:
+            printf("    ");
+            break;
+        default:
+            if (strlen(msg) < 60){
+                printf("\t     "); 
+            }
+            else{
+                printf("\t");
+            }
+            break;
+    }
+    printf("---");
+    for (int i = 0; i < strlen(msg) + 1; i++){
+        printf("-");
+    }
+    printf("----\n");
+    
+    switch (monster){
+        case 1:
+            printf("  ");
+            break;
+        case 2:     
+            printf("    ");
+            break;  
+        default:
+            if (strlen(msg) < 60){
+                printf("\t     "); 
+            }
+            else{ 
+                printf("\t");
+            }
+            break;
+    }
+    printf("|   %s   |\n", msg);
+    switch (monster){
+        case 1:         
+            printf("  ");
+            break;
+        case 2: 
+            printf("    ");
+            break;
+        default:
+            if (strlen(msg) < 60){
+                printf("\t     ");
+            }
+            else{
+                printf("\t");
+            }
+            break;
+    }
+    printf("---");
+    for (int i = 0; i < strlen(msg) + 1; i++){
+        printf("-");
+    }
+    printf("----\n");
+}
 
 void firstMonsterDisplay(){
     printf("\t\t  -/\\--------/\\-\n");
