@@ -129,8 +129,8 @@ void preGame(){
     printf("\nMonsters lurk these halls and devour whoever they encounter.\nYou are trapped and must defeat all the monsters to escape.\nAre you able to step up to the challenge and conquer the dungeon?\n");
     printf("Or will you like many others before you fall victim to these treacherous creatures.\nThat outcome rests in your hands!\n");
     printf("\n\t\t\t  How To Play:\nThere are 3 monsters in the dungeon: 2 regular monsters and 1 boss monster.\nEnter 1 for basic attacks, 2 for power attacks and 3 for enhanced attacks. Basic attacks do 10 damage points and power attacks do 30 damage points.\n");
-    printf("During each attack there is a 20%% chance it becomes a critical hit in which case the attack does double damage points.\nIf you get more than one critical hit in a single playthrough your basic attack increases by 10 damage points for each critical hit.\n");
-    printf("Enhanced attack allows you to deal 50 damage points but you lose 30 total health including shield points.\nThe monsters only do 10 damage points. You gain shield points for defeating monsters.\n\n\n");
+    printf("During each basic attack, there is a 20%% chance it becomes a critical hit, in which case the attack does double damage points.\nIf you get more than one critical hit in a single playthrough, your basic attack increases by 10 damage points for each critical hit.\n");
+    printf("Enhanced attack allows you to deal 50 damage points, but you lose 30 total health including shield points.\nThe monsters only do 10 damage points. You gain shield points for defeating monsters.\n\n\n");
 }
 
 int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount) {
