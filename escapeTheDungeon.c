@@ -550,7 +550,7 @@ int fourthBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
 int fifthBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount){
     int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, isFirst = 0, secondPhaseDisplay = 1, secondPhaseTrigger = 0;
     char firstMsg[90] = "WHAT’S THIS, YOU SUBDUED THE OTHERS?! HOW INTERESTING, YOU CAME THIS FAR JUST TO LOSE!!", deathMsg[108] = "RAAAAAAHHH!! INCONCEIVABLE! CURSE THOSE INSOLENT CREATURES FOR NOT STOPPING YOU LEADING TO THIS TRAVESTY!!!";
-    char name[22] = "BLUGGARD THE WRETCHED", usrDthMsg[89] = "THIS WAS QUITE ENTERTAINING! IT WAS A DECENT ATTEMPT! STAND PROUD HUMAN YOU ARE STRONG!!", phase2Msg[77] = "IT SEEMS I UNDERESTIMATED YOUR ABILITY!! YOU'VE FORCED ME TO PUT MY ALL IN!!";
+    char name[22] = "BLUGGARD THE WRETCHED", usrDthMsg[89] = "THIS WAS QUITE ENTERTAINING! IT WAS A VALIANT EFFORT! STAND PROUD HUMAN YOU ARE STRONG!!", phase2Msg[77] = "IT SEEMS I UNDERESTIMATED YOUR ABILITY!! YOU'VE FORCED ME TO PUT MY ALL IN!!";
                 
     printf("\nThe Final Monster Approaches\n");  
     sleep(1);
