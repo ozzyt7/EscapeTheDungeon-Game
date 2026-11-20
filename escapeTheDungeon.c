@@ -1,5 +1,7 @@
-#include <stdio.h> 
-#include <unistd.h>  
+#include <stdio.h> //add time minigame where they have to input word in specific amnt of time and they get stuff
+// like increase power up dmg and get pw or make all enemies start with 10 or 15 or 20 % less health they get like a magic potion or like a poison
+//aura or could make it funny and be like they get the swamp ass or musty power or maybe new power 
+#include <unistd.h>   
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -9,6 +11,9 @@ struct player {
     int hp;
     int shield;
     int pw;
+    int atkDmg;
+    int pwDmg;
+    int critCount;
 };
 
 struct monster {
@@ -17,13 +22,13 @@ struct monster {
 };
 
 void preGame();
-int firstBttl(struct player*, struct monster*, int*, int*, int*);
-int secondBttl(struct player*, struct monster*, int*, int*, int*);
-int thirdBttl(struct player*, struct monster*, int*, int* , int*); 
-int fourthBttl(struct player*, struct monster*, int*, int* , int*);
-int fifthBttl(struct player*, struct monster*, int*, int* , int*);
+int firstBttl(struct player*, struct monster*);
+int secondBttl(struct player*, struct monster*);
+int thirdBttl(struct player*, struct monster*); 
+int fourthBttl(struct player*, struct monster*);
+int fifthBttl(struct player*, struct monster*);
 int playAgain();
-int critChance(int*, int*);
+int critChance(struct player*);
 void displayHpBar(int, int, struct monster*);
 int getInput();
 void extraHp(struct player*, int);
@@ -95,22 +100,20 @@ int main(){
     sleep(1);
 
     while (1){ 
-        struct player user = {120, 0, 5};
+        struct player user = {120, 0, 5, 10, 30, 0};
         struct player *playerPtr = &user;
         struct monster firstM = {60, 10}, secondM = {120, 10}, thirdM = {200, 10}, fourthM = {260, 20}, fifthM = {340, 20};
         struct monster *m1 = &firstM, *m2 = &secondM, *m3 = &thirdM, *m4 = &fourthM, *m5 = &fifthM;
-	    int atkDmg = 10, pwDmg = 30, critCount = 0;
-	    int *atkPtr = &atkDmg, *pwDmgPtr = &pwDmg, *critPtr = &critCount; 
 
-        int firstPhase = firstBttl(playerPtr, m1, atkPtr, pwDmgPtr, critPtr);
+        int firstPhase = firstBttl(playerPtr, m1);
         if (!firstPhase){
             break;
         }
         if (firstPhase == 1){
             continue;
         }
-	    extraHp(playerPtr, 20);
-        int secondPhase = secondBttl(playerPtr, m2, atkPtr, pwDmgPtr, critPtr);
+	    extraHp(playerPtr, 30);
+        int secondPhase = secondBttl(playerPtr, m2);
         if (!secondPhase){
             break;
         }
@@ -118,7 +121,7 @@ int main(){
             continue;
         }
         extraHp(playerPtr, 30);
-	    int thirdPhase = thirdBttl(playerPtr, m3, atkPtr, pwDmgPtr, critPtr);
+	    int thirdPhase = thirdBttl(playerPtr, m3);
         if (!thirdPhase){
 	        break;
 	    }
@@ -126,7 +129,7 @@ int main(){
 	        continue;
 	    }
         extraHp(playerPtr, 40);
-        int fourthPhase = fourthBttl(playerPtr, m4, atkPtr, pwDmgPtr, critPtr);
+        int fourthPhase = fourthBttl(playerPtr, m4);
         if (!fourthPhase){
         break;
         }
@@ -134,7 +137,7 @@ int main(){
         continue;
         }
         extraHp(playerPtr, 50);
-        int finalPhase = fifthBttl(playerPtr, m5, atkPtr, pwDmgPtr, critPtr);
+        int finalPhase = fifthBttl(playerPtr, m5);
         if (!finalPhase){
         break;
         }
@@ -162,7 +165,7 @@ void preGame(){
     printf("Between each battle there is a 10%% chance you stumble upon a health pack and gain extra health points.\nUnlike with regular monsters, the boss monster has 2 phases where the creature's damage will increase.\n\n\n");
 }
 
-int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount) {
+int firstBttl(struct player *pStats, struct monster *monsterPtr) {
     int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 2, isFirst = 1, shieldIncr = 30;
     char firstMsg[60] = "UGH, THERE'S MORE OF YOU? FINE, I'LL DEAL WITH YOU QUICKLY!", deathMsg[44] = "WAIT, I WAS BESTED?! NO, THIS CAN'T BE!!!", name[20] = "ESTREED THE ANGULAR";
 
@@ -194,44 +197,43 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
         }
         switch(input){
             case 1:
-                if (critChance(critCount, atkDmg)){
-                    monsterPtr->hp -= ((*atkDmg) * 2);
-                    printf("\nYou got a critical hit! You do %d damage points to the enemy!\n", *atkDmg *2); 
+                if (critChance(pStats)){
+                    monsterPtr->hp -= (pStats->atkDmg * 2);
+                    printf("\nYou got a critical hit! You do %d damage points to the enemy!\n", pStats->atkDmg *2); 
                     break; 
                 }
-                monsterPtr->hp -= (*atkDmg);
-	            printf("\nYou did %d damage points to the enemy!\n", *atkDmg);
+                monsterPtr->hp -= pStats->atkDmg;
+	            printf("\nYou did %d damage points to the enemy!\n", pStats->atkDmg);
        	        break;
 	        case 2:
                 if (pStats -> pw > 0){
-                    monsterPtr->hp -= (*pwDmg);
+                    monsterPtr->hp -= pStats->pwDmg;
 		            (pStats -> pw)--;
-                    printf("\nYou did %d damage points to the enemy!\n", *pwDmg);
+                    printf("\nYou did %d damage points to the enemy!\n", pStats->pwDmg);
 	                break;
 		        }
 	            else{
 		            printf("\nYou are out of Power Attacks!\n");
                     continue;	
 		        }
-         
-	    case 3:
-	      if (pStats->hp <= 30){
-            printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
-    		continue;
-            }
-            pStats->hp -= 30;
-	        monsterPtr->hp -= 50;
-	        printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n\n");
-            break;
- 	        default:
-                printf("\nYou can only do a Basic Attack, Power Attack or Enhanced Attack!\n\n");
+            case 3:
+            if (pStats->hp <= 30){
+                printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
                 continue;
+                }
+                pStats->hp -= 30;
+                monsterPtr->hp -= 50;
+                printf("\nEnhanced Damage effect! You sacrifice 30 overall health but you inflict 50 damage points to the enemy!\n\n");
+                break;
+                default:
+                    printf("\nYou can only do a Basic Attack, Power Attack or Enhanced Attack!\n\n");
+                    continue;
         }
         sleep(1);
         if (monsterPtr->hp <= 0){
             monsterPtr->hp = 0;
  	        printf("\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t|   %s   |\n\t*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
-	       displayHpBar(maxHp, isFirst, monsterPtr);
+	        displayHpBar(maxHp, isFirst, monsterPtr);
             firstMonsterDisplayDeath();
 	        displayMsg(1, deathMsg);
             (pStats->shield) += shieldIncr;
@@ -246,7 +248,7 @@ int firstBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
     return playAgain();
 }
 
-int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount){
+int secondBttl(struct player *pStats, struct monster *monsterPtr){
     int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, shieldIncr = 50, isFirst = 0;
     char firstMsg[52] = "HAHA!! WHAT PUNY HUMAN THINKS HE CAN CHALLENGE ME?!", deathMsg[44] = "IMPOSSIBLE!! HOW COULD THIS HAPPEN TO ME!!!", name[18] = "REGIS THE TWISTED", usrDthMsg[76] = "FOOLISH MORTAL! I PITY YOUR SIMPLE-MINDEDNESS!! I DIDN'T EVEN TRY!!";
 
@@ -279,19 +281,19 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
 
         switch (input){
             case 1:
-	            if (critChance(critCount, atkDmg)){
-		            monsterPtr->hp -= *atkDmg * 2;
-		            printf("\nYou got a critical hit! You do %d damage points to the enemy!\n", *atkDmg *2);
+	            if (critChance(pStats)){
+		            monsterPtr->hp -= pStats->atkDmg * 2;
+		            printf("\nYou got a critical hit! You do %d damage points to the enemy!\n", pStats->atkDmg *2);
 		            break;
 		        }   
-                monsterPtr->hp -= *atkDmg;
-                printf("\nYou did %d damage points to the enemy!\n", *atkDmg);
+                monsterPtr->hp -= pStats->atkDmg;
+                printf("\nYou did %d damage points to the enemy!\n", pStats->atkDmg);
 		        break;
             case 2:
                 if (pStats -> pw > 0){
-                    monsterPtr->hp -= *pwDmg;
+                    monsterPtr->hp -= pStats->pwDmg;
                     (pStats -> pw)--;
-                    printf("\nYou did %d damage points to the enemy!\n", *pwDmg);
+                    printf("\nYou did %d damage points to the enemy!\n", pStats->pwDmg);
                     break;
                     
                 }
@@ -348,14 +350,15 @@ int secondBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
    return playAgain();
 }
 
-int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount){
-    int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, isFirst = 0, shieldIncr = 100;
+int thirdBttl(struct player *pStats, struct monster *monsterPtr){
+    int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, isFirst = 0, shieldIncr = 100, attkNum = 0;
     char firstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!", name[22] = "GROOOB THE INSATIABLE", usrDthMsg[69] = "MINE! MINE! YOU'RE ALL MINEEEEEEE!! I WILL SAVOUR THIS TENDER MEAT!!";
 
     printf("\nThe Third Monster Approaches\n");
     sleep(1);         
     while (1){
         sleep(1);
+
         printf("\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n\t\t\t|   %s   |\n\t\t\t*=*=*=*=*=*=*=*=*=*=*=*=*=*=*\n", name);
 	    displayHpBar(maxHp, isFirst, monsterPtr);
 	    thirdMonsterDisplay();
@@ -380,19 +383,19 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
         }
         switch (input){
             case 1:
-                if (critChance(critCount, atkDmg)){
-                    monsterPtr->hp -= *atkDmg *2;
-		            printf("\nYou got a critical hit! You do %d damage to the enemy!\n", *atkDmg *2);
+                if (critChance(pStats)){
+                    monsterPtr->hp -= pStats->atkDmg *2;
+		            printf("\nYou got a critical hit! You do %d damage to the enemy!\n", pStats->atkDmg *2);
 		            break;
 		        }
-                monsterPtr->hp -= *atkDmg;
-                printf("\nYou did %d damage to the enemy!\n", *atkDmg);
+                monsterPtr->hp -= pStats->atkDmg;
+                printf("\nYou did %d damage to the enemy!\n", pStats->atkDmg);
                 break;
             case 2:
                 if ((pStats -> pw) > 0){
-                    monsterPtr->hp -= *pwDmg;
+                    monsterPtr->hp -= pStats->pwDmg;
                     (pStats->pw)--;
-                    printf("\nYou did %d damage to the enemy!\n", *pwDmg);
+                    printf("\nYou did %d damage to the enemy!\n", pStats->pwDmg);
                     break;
         
                 }
@@ -447,7 +450,7 @@ int thirdBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
 
 }
 
-int fourthBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount){
+int fourthBttl(struct player *pStats, struct monster *monsterPtr){
     int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, shieldIncr = 150, isFirst = 0;
     char firstMsg[105] = "HOW DARE A MERE HUMAN TRY TO MEASURE UP TO THE LIKES OF ME! YOU AREN’T WORTHY OF BEING IN MY PRESENCE!", usrDthMsg[84] = "KNOW YOUR PLACE MAGGOT!! JUST THE THOUGHT OF THESE FEEBLE BEINGS ASSAULTS MY BRAIN!";
     char name[20] = "GILTSPUR THE MIGHTY", deathMsg[108] = "OUTRAGEOUS!!! YOU WILL RUE THIS DAY EARTHLING, I SWEAR IT!! I WILL RISE AGAIN! THE MIGHTY WILL NEVER FALL!!";
@@ -478,19 +481,19 @@ int fourthBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
         }       
         switch (input){
             case 1:
-                if (critChance(critCount, atkDmg)){
-                    monsterPtr->hp -= *atkDmg * 2;
-                    printf("\nYou got a critical hit! You do %d damage points to the enemy!\n", *atkDmg *2);
+                if (critChance(pStats)){
+                    monsterPtr->hp -= pStats->atkDmg * 2;
+                    printf("\nYou got a critical hit! You do %d damage points to the enemy!\n", pStats->atkDmg *2);
                     break;   
                 }
-                monsterPtr->hp -= *atkDmg;
-                printf("\nYou did %d damage points to the enemy!\n", *atkDmg);
+                monsterPtr->hp -= pStats->atkDmg;
+                printf("\nYou did %d damage points to the enemy!\n", pStats->atkDmg);
                 break;
             case 2: 
                 if (pStats->pw > 0){
-                    monsterPtr->hp -= *pwDmg;
+                    monsterPtr->hp -= pStats->pwDmg;
                     pStats->pw--;
-                    printf("\nYou did %d damage points to the enemy!\n", *pwDmg);
+                    printf("\nYou did %d damage points to the enemy!\n", pStats->pwDmg);
                     break;
                 }
                 else{
@@ -547,7 +550,7 @@ int fourthBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, i
    return playAgain();
 
 }
-int fifthBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, int *pwDmg, int *critCount){
+int fifthBttl(struct player *pStats, struct monster *monsterPtr){
     int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, isFirst = 0, secondPhaseDisplay = 1, secondPhaseTrigger = 0;
     char firstMsg[90] = "WHAT’S THIS, YOU SUBDUED THE OTHERS?! HOW INTERESTING, YOU CAME THIS FAR JUST TO LOSE!!", deathMsg[108] = "RAAAAAAHHH!! INCONCEIVABLE! CURSE THOSE INSOLENT CREATURES FOR NOT STOPPING YOU LEADING TO THIS TRAVESTY!!!";
     char name[22] = "BLUGGARD THE WRETCHED", usrDthMsg[89] = "THIS WAS QUITE ENTERTAINING! IT WAS A VALIANT EFFORT! STAND PROUD HUMAN YOU ARE STRONG!!", phase2Msg[77] = "IT SEEMS I UNDERESTIMATED YOUR ABILITY!! YOU'VE FORCED ME TO PUT MY ALL IN!!";
@@ -593,19 +596,19 @@ int fifthBttl(struct player *pStats, struct monster *monsterPtr, int *atkDmg, in
                     
         switch (input){
             case 1:
-                if (critChance(critCount, atkDmg)){
-                    monsterPtr->hp -= *atkDmg *2;
-                    printf("\nYou got a critical hit! You do %d damage to the enemy!\n", *atkDmg *2);
+                if (critChance(pStats)){
+                    monsterPtr->hp -= pStats->atkDmg *2;
+                    printf("\nYou got a critical hit! You do %d damage to the enemy!\n", pStats->atkDmg *2);
                     break;
                 }
-                monsterPtr->hp -= *atkDmg;
-                printf("\nYou did %d damage to the enemy!\n", *atkDmg);
+                monsterPtr->hp -= pStats->atkDmg;
+                printf("\nYou did %d damage to the enemy!\n", pStats->atkDmg);
                 break;
             case 2:
                 if (pStats->pw > 0){
-                    monsterPtr->hp -= *pwDmg;
+                    monsterPtr->hp -= pStats->pwDmg;
                     (pStats->pw)--;
-                    printf("\nYou did %d damage to the enemy!\n", *pwDmg);
+                    printf("\nYou did %d damage to the enemy!\n", pStats->pwDmg);
                     break;
                 }
                 else{
@@ -697,14 +700,14 @@ int playAgain(){
     return 0;
 }
 
-int critChance(int *critCount, int *atkDmg){
+int critChance(struct player *p){
     srand(time(NULL));
     int critNum = (rand() % 10) + 1;
 
     if (critNum > 8){
-	(*critCount)++;
-        if (*critCount > 1){
-	    *atkDmg += 10;
+	(p->critCount)++;
+        if (p->critCount > 1){
+	    p->atkDmg += 10;
 	}
         return 1;
     }
@@ -715,7 +718,8 @@ int critChance(int *critCount, int *atkDmg){
 void displayHpBar(int maxHp, int isFirstMonster, struct monster *mPtr){
     int hpDisplay;
     if (isFirstMonster){
-        hpDisplay = mPtr->hp / 2;    }
+        hpDisplay = mPtr->hp / 2;  
+}
     else {
         hpDisplay = mPtr->hp / 4;
     }
@@ -874,7 +878,6 @@ void extraHp(struct player *ptr, int hpBonus){
     }
     return;
 }
-
 
 void firstMonsterDisplay(){
     printf("\t\t     -/\\--------/\\-\n");
