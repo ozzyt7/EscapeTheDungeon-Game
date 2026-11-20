@@ -1,6 +1,4 @@
-#include <stdio.h> //add time minigame where they have to input word in specific amnt of time and they get stuff
-// like increase power up dmg and get pw or make all enemies start with 10 or 15 or 20 % less health they get like a magic potion or like a poison
-//aura or could make it funny and be like they get the swamp ass or musty power or maybe new power 
+#include <stdio.h>
 #include <unistd.h>   
 #include <string.h>
 #include <ctype.h>
