@@ -129,13 +129,8 @@ int main(){
         struct upgrade upgradeList = {0, 0, 0, 0, 0, 0, 0, 0, 0}, *upgPtr = &upgradeList;
         int upgSelected;
 
-        int firstPhase = firstBttl(playerPtr, m1, upgPtr);
-        if (!firstPhase){
-            break;
-        }
-        if (firstPhase == 1){
-            continue;
-        }
+        firstBttl(playerPtr, m1, upgPtr);
+
 	    extraHp(playerPtr, upgPtr, 30);
         upgSelected = upgradeCheckpoint(upgPtr);
         upgradeAdd(playerPtr, upgPtr, upgSelected);
