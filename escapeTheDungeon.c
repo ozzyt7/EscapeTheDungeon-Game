@@ -129,7 +129,7 @@ int main(){
         struct player user = {120, 0, 10, 5, 30, 50, 30, 0}, *playerPtr = &user;
         struct monster firstM = {60, 10}, secondM = {120, 10}, thirdM = {200, 10}, fourthM = {260, 20}, fifthM = {340, 20};
         struct monster *m1 = &firstM, *m2 = &secondM, *m3 = &thirdM, *m4 = &fourthM, *m5 = &fifthM;
-        struct upgrade upgradeList = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, *upgPtr = &upgradeList;
+        struct upgrade upgradeList = {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0}, *upgPtr = &upgradeList;
         int upgSelected;
 
         firstBttl(playerPtr, m1, upgPtr);
@@ -217,7 +217,7 @@ void preGame(){
     printf("Upgrades have the chance of showing up at multiple checkpoints. If the same upgrade is chosen at different checkpoints, the effects stack and can continue to stack infinitely.\nUnlike with regular monsters, the boss monster has 2 phases where the creature's damage will increase.\n\n\n");
 }
 
-//Impossible for user to die in first battle so no checking for hp < 0
+//Suppose to be beginner monster for user to learn game so impossible for user to die in first battle so no checking for hp < 0
 int firstBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgrade *ptrUpg) {
     int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 2, shieldIncr = 30, monsterNum = 1;
     char inputArr[4], firstMsg[60] = "UGH, THERE'S MORE OF YOU? FINE, I'LL DEAL WITH YOU QUICKLY!", deathMsg[59] = "WAIT, I'M DYING! WHAT, I WAS BESTED?! NO, THIS CAN'T BE!!!", name[20] = "ESTREED THE ANGULAR";
@@ -314,7 +314,7 @@ int secondBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
         
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", ptrPlayer->hp, ptrPlayer->shield, ptrPlayer->pw);
         if (ptrUpg->explosiveAtk){
-            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Bomb\n\nChoose your attack: ");
+            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Wolfram Psora Device\n\nChoose your attack: ");
         }
         else{
             printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
@@ -405,7 +405,7 @@ int thirdBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
 
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", ptrPlayer->hp, ptrPlayer->shield, ptrPlayer->pw);
         if (ptrUpg->explosiveAtk){
-            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Bomb\n\nChoose your attack: ");
+            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Wolfram Psora Device\n\nChoose your attack: ");
         }
         else{
             printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
@@ -494,7 +494,7 @@ int fourthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
         }
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", ptrPlayer->hp, ptrPlayer->shield, ptrPlayer->pw);
         if (ptrUpg->explosiveAtk){
-            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Bomb\n\nChoose your attack: ");
+            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Wolfram Psora Device\n\nChoose your attack: ");
         }
         else{
             printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
@@ -596,7 +596,7 @@ int fifthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
                     
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", ptrPlayer->hp, ptrPlayer->shield, ptrPlayer->pw);
         if (ptrUpg->explosiveAtk){
-            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Bomb\n\nChoose your attack: ");
+            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Wolfram Psora Device\n\nChoose your attack: ");
         }
         else{
             printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
@@ -799,7 +799,7 @@ void extraHp(struct player *ptrPlayer, struct upgrade *upgPtr, int hpBonus){
     chanceHp += upgPtr->extraHpBonus;
     if (chanceHp > 9){
         ptrPlayer->hp += hpBonus;
-        printf("\nYou found a health pack. You gained %d health points\n\n", hpBonus);
+        printf("\nYou find a health pack. You gain %d health points\n\n", hpBonus);
         sleep(2);
         return;
     }
@@ -1138,7 +1138,7 @@ int upgradeCheckpoint(struct upgrade *ptrUpg){
     }
 
     while (1){
-        printf("\t\tCheckpoint!! Available Upgrades:");
+        printf("\n\t\tCheckpoint!! Available Upgrades:");
         printf("\n\n[1]\t\t\t%s\n%s\n[2]\t\t\t%s\n%s\n[3]\t\t\t%s\n%s\n[4]\t\t\tDecline All Upgrades\n\nChoose your Upgrade: ", *(upgArr + option1), *(upgArrDesc + option1), *(upgArr + option2), *(upgArrDesc + option2), *(upgArr + option3), *(upgArrDesc + option3));
         int input = getInput(upgSelect, sizeof(upgSelect), ptrUpg);
         
@@ -1245,12 +1245,12 @@ int sneakAtkFunction(struct monster *mPtr, struct upgrade *upgPtr, char *monster
                 break;
         }
         displayMsg(monsterNum, deathMsg);
-        printf("\nYou use the potion and successfully sneak past the monster. You attack the monster from behind defeating it in a single attack!\n");
+        printf("\nYou use the potion and successfully sneak past the monster. You attack the creature from behind and defeat it in a single blow!\n");
         return 1;
     }
     monsterHpIncr = mPtr->hp * 0.20;
     mPtr->hp += monsterHpIncr;
-    printf("\nYou use the potion and start to sneak past the monster. However, the potion wears off and the monster spots you! The creature becomes ENRAGED and starts the battle with %d more health points!\n", monsterHpIncr);
+    printf("\nYou use the potion and start to sneak past the monster. However, the potion wears off and the monster spots your attempt at deception! The creature becomes ENRAGED and starts the battle with %d more health points!\n", monsterHpIncr);
     return 0;
 }
 
