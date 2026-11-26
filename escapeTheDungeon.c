@@ -1,7 +1,7 @@
-#include <stdio.h> 
-#include <unistd.h>   
-#include <string.h> 
-#include <ctype.h> 
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -26,6 +26,8 @@ struct upgrade {
     int isLastStandSuccess;
     int isSneakAtk;
     int ashesAtk;
+    int explosiveAtk;
+    int explosiveTimer;
 };
 
 struct monster {
@@ -53,6 +55,7 @@ void displayMsg(int, char *);
 void upgradeAdd(struct player*, struct upgrade*, int);
 int upgradeCheckpoint(struct upgrade*);
 void ashesDecayFunction(struct monster*, struct upgrade*);
+void explosiveFunction(struct monster*, struct upgrade*);
 void extraLife(struct player*, struct upgrade*);
 void lastStandFunction(struct player*, struct upgrade*);
 void lastStandSuccessFunction(struct player*, struct upgrade*);
@@ -126,13 +129,16 @@ int main(){
         struct player user = {120, 0, 10, 5, 30, 50, 30, 0}, *playerPtr = &user;
         struct monster firstM = {60, 10}, secondM = {120, 10}, thirdM = {200, 10}, fourthM = {260, 20}, fifthM = {340, 20};
         struct monster *m1 = &firstM, *m2 = &secondM, *m3 = &thirdM, *m4 = &fourthM, *m5 = &fifthM;
-        struct upgrade upgradeList = {0, 0, 0, 0, 0, 0, 0, 0, 0}, *upgPtr = &upgradeList;
+        struct upgrade upgradeList = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, *upgPtr = &upgradeList;
         int upgSelected;
 
         firstBttl(playerPtr, m1, upgPtr);
 
 	    extraHp(playerPtr, upgPtr, 30);
         upgSelected = upgradeCheckpoint(upgPtr);
+        if (upgSelected == -1){
+            break;
+        }
         upgradeAdd(playerPtr, upgPtr, upgSelected);
         sleep(2);
 
@@ -145,6 +151,9 @@ int main(){
         }
         extraHp(playerPtr, upgPtr, 30);
         upgSelected = upgradeCheckpoint(upgPtr);
+        if (upgSelected == -1){
+            break;
+        }
         upgradeAdd(playerPtr, upgPtr, upgSelected);
         sleep(2);
 
@@ -157,6 +166,9 @@ int main(){
 	    }
         extraHp(playerPtr, upgPtr, 40);
         upgSelected = upgradeCheckpoint(upgPtr);
+        if (upgSelected == -1){
+            break;
+        }
         upgradeAdd(playerPtr, upgPtr, upgSelected);
         sleep(2);
 
@@ -169,6 +181,9 @@ int main(){
         }
         extraHp(playerPtr, upgPtr, 50);
         upgSelected = upgradeCheckpoint(upgPtr);
+        if (upgSelected == -1){
+            break;
+        }
         upgradeAdd(playerPtr, upgPtr, upgSelected);
         sleep(2);
 
@@ -268,11 +283,10 @@ int secondBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
         maxHp = monsterPtr->hp / 4;
         sleep(2);
     }
-    if(ptrUpg->ashesAtk){
+    if (ptrUpg->ashesAtk){
         ashesDecayFunction(monsterPtr, ptrUpg);
         sleep(2);
     }
-
     
     while (1){
         displayName(monsterNum, name);
@@ -297,8 +311,14 @@ int secondBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
 	        displayMsg(monsterNum, usrDthMsg);
             break;
         }
+        
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", ptrPlayer->hp, ptrPlayer->shield, ptrPlayer->pw);
-        printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
+        if (ptrUpg->explosiveAtk){
+            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Bomb\n\nChoose your attack: ");
+        }
+        else{
+            printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
+        }
         int input = getInput(inputArr, sizeof(inputArr), ptrUpg);
         if (input == -1){
             return 0;
@@ -311,6 +331,9 @@ int secondBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
             sleep(2);
             continue;
         }
+        if (ptrUpg->explosiveTimer){
+            explosiveFunction(monsterPtr, ptrUpg);
+        }
         sleep(1);
 
        if (monsterPtr->hp <= 0){
@@ -319,6 +342,7 @@ int secondBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
                 sleep(2);
             }
             monsterPtr->hp = 0;
+            ptrUpg->explosiveTimer = 0;
             displayName(monsterNum, name);
 	        displayHpBar(maxHp, monsterNum, monsterPtr);
  	        secondMonsterDisplayDeath();
@@ -350,7 +374,7 @@ int thirdBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
         maxHp = monsterPtr->hp / 4;
         sleep(2);
     }
-    if(ptrUpg->ashesAtk){
+    if (ptrUpg->ashesAtk){
         ashesDecayFunction(monsterPtr, ptrUpg);
         sleep(2);
     }
@@ -380,7 +404,12 @@ int thirdBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
         }
 
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", ptrPlayer->hp, ptrPlayer->shield, ptrPlayer->pw);
-        printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
+        if (ptrUpg->explosiveAtk){
+            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Bomb\n\nChoose your attack: ");
+        }
+        else{
+            printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
+        }
         int input = getInput(inputArr, sizeof(inputArr), ptrUpg);
         if (input == -1){
             return 0;
@@ -393,6 +422,9 @@ int thirdBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
             sleep(2);
             continue;
         }
+        if (ptrUpg->explosiveTimer){
+            explosiveFunction(monsterPtr, ptrUpg);
+        }
         sleep(1);
    
         if (monsterPtr->hp <= 0){
@@ -401,6 +433,7 @@ int thirdBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
                 sleep(2);
             }
             monsterPtr->hp = 0;
+            ptrUpg->explosiveTimer = 0;
             displayName(monsterNum, name);
  	        displayHpBar(maxHp, monsterNum, monsterPtr);
 	        thirdMonsterDisplayDeath();
@@ -460,7 +493,12 @@ int fourthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
             break;
         }
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", ptrPlayer->hp, ptrPlayer->shield, ptrPlayer->pw);
-        printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
+        if (ptrUpg->explosiveAtk){
+            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Bomb\n\nChoose your attack: ");
+        }
+        else{
+            printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
+        }
         int input = getInput(inputArr, sizeof(inputArr), ptrUpg);
         if (input == -1){
             return 0;
@@ -473,6 +511,9 @@ int fourthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
             sleep(2);
             continue;
         }
+        if (ptrUpg->explosiveTimer){
+            explosiveFunction(monsterPtr, ptrUpg);
+        }
         sleep(1);
     
        if (monsterPtr->hp <= 0){
@@ -481,6 +522,7 @@ int fourthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
                 sleep(2);
             }
             monsterPtr->hp = 0;
+            ptrUpg->explosiveTimer = 0;
             displayName(monsterNum, name);
             displayHpBar(maxHp, monsterNum, monsterPtr);
             fourthMonsterDisplayDeath();
@@ -489,7 +531,7 @@ int fourthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
             printf("\nYou defeated Giltspur The Mighty! You gained %d shield points!\n\n", shieldIncr + ptrUpg->shieldBuff);
             sleep(3);
             return 2;
-        }              
+        }
        dmgTakenFunction(inputArr[1], ptrPlayer, monsterPtr, ptrUpg);
        sleep(1);
    }
@@ -512,7 +554,7 @@ int fifthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
         maxHp = monsterPtr->hp / 4;
         sleep(2);
     }
-    if(ptrUpg->ashesAtk){
+    if (ptrUpg->ashesAtk){
         ashesDecayFunction(monsterPtr, ptrUpg);
         sleep(2);
     }
@@ -553,7 +595,12 @@ int fifthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
         }
                     
         printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", ptrPlayer->hp, ptrPlayer->shield, ptrPlayer->pw);
-        printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
+        if (ptrUpg->explosiveAtk){
+            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Bomb\n\nChoose your attack: ");
+        }
+        else{
+            printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
+        }
         int input = getInput(inputArr, sizeof(inputArr), ptrUpg);
         if (input == -1){
             return 0;
@@ -566,6 +613,9 @@ int fifthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
             sleep(2);
             continue;
         }
+        if (ptrUpg->explosiveTimer){
+            explosiveFunction(monsterPtr, ptrUpg);
+        }
         sleep(1);
                     
         if (monsterPtr->hp <= 0){
@@ -574,6 +624,7 @@ int fifthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
                 sleep(2);
             }
             monsterPtr->hp = 0;
+            ptrUpg->explosiveTimer = 0;
             displayName(monsterNum, name);
             displayHpBar(maxHp, monsterNum, monsterPtr);
             fifthMonsterDisplayDeathP2();
@@ -644,7 +695,7 @@ int atkFunction(int input, struct player *ptrPlayer, struct monster *ptrMonster,
                 printf("\nYou are out of Power Attacks!\n");
                 return 0;
             }
-            case 3:
+        case 3:
             if (ptrPlayer->hp + ptrPlayer->shield <= 30){
                 printf("\nUnable to perform Enhanced Attack! Health is too low!\n");
                 return 0;
@@ -662,6 +713,13 @@ int atkFunction(int input, struct player *ptrPlayer, struct monster *ptrMonster,
             ptrMonster->hp -= ptrPlayer->eDmg;
             printf("\nEnhanced Damage effect! You sacrifice %d overall health but you inflict %d damage points to the enemy!\n", ptrPlayer->eHpTaken, ptrPlayer->eDmg);
             break;
+        case 4:
+            if (!ptrUpg->explosiveAtk){
+                printf("\nInvalid Input. You haven't acquired the Wolfram Psora Device yet!\n\n");
+                return 0;
+            }
+            explosiveFunction(ptrMonster, ptrUpg);
+            return 1;
         default:
             printf("\nYou can only do a Basic Attack, Power Attack or Enhanced Attack!\n");
             return 0;
@@ -704,15 +762,15 @@ int getInput(char *input, int inputSize, struct upgrade *upgPtr){
     }
     if (strchr(input, '\n') == NULL){ //no \n means input too long for buffer so clear stdin
         while ((c = getchar()) != '\n' && c != EOF);
-        printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
+        printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n\n");
         return 0;
     }
     if (input[1] != 10){
         if (!upgPtr->blanketAtk && (input[1] == 66 || input[1] == 98)){
-            printf("\nInvalid Input. You don't possess Istrian's Blanket. Please don't include spaces and choose either only 1, 2 or 3.\n");
+            printf("\nInvalid Input. You don't possess Istrian's Blanket. Please don't include spaces and choose either only 1, 2 or 3.\n\n");
         }
         else if(input[1] != 66 && input[1] != 98){
-            printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n");
+            printf("\nInvalid Input. Please don't include spaces and choose either only 1, 2 or 3.\n\n");
         }
         else{
             return 1;
@@ -1028,6 +1086,9 @@ void upgradeAdd(struct player *ptrPlayer, struct upgrade *ptrUpg, int upgInput){
         case 10:
             (ptrUpg->ashesAtk)++;
             break;
+        case 11:
+            (ptrUpg->explosiveAtk)++;
+            break;
         default:
             printf("\nConfidence and Coolness buff! All upgrades Declined!!\n\n");
             break;
@@ -1037,7 +1098,7 @@ void upgradeAdd(struct player *ptrPlayer, struct upgrade *ptrUpg, int upgInput){
 }
 
 int upgradeCheckpoint(struct upgrade *ptrUpg){
-    int upgNumTotal = 10, option1, option2, option3;
+    int upgNumTotal = 11, option1, option2, option3;
 
     char upgSelect[3];
     char upg1[32] = "Saw-Scaled Venomous Enrichment\n";    //poison ability
@@ -1050,19 +1111,21 @@ int upgradeCheckpoint(struct upgrade *ptrUpg){
     char upg8[19] = "Istrian's Blanket\n";                 //sleep attack
     char upg9[25] = "Arms of Avaritia's Army\n";           //gain pw
     char upg10[20] = "Ashes of Cappensis\n";               //reduce monster starting health
+    char upg11[22] = "Wolfram Psora Device\n";             //explosive attack
     char upgDesc1[149] = "Coat your attacks in a poison derived from the elusive underdweller Echis, dealing an additional 5 damage points to all monsters after each attack!\n";
     char upgDesc2[226] = "Belonging to the goddess Patrona, she bestows her blessings only on winners. Gain her favour and honour her in battle.\nUnder the aegis of Patrona and upon victory after each battle, she grants an additional 30 shield points!\n";
     char upgDesc3[184] = "Stolen from the carcass of the giant Convex The Panoptic, who fell in the Great Battle of Strenua, use a shard from his eye to increase your chance of finding a health packet by 10%!\n";
     char upgDesc4[486] = "Twin trickster gods, Sleip and Sylix, love horseplay and tormenting unsuspecting individuals with their antics.\nThey see your plight and wish to aid in your predicament, or so it seems.\nThey offer a potion that will turn you invisible and allow you to sneak past the monster and bypass the next battle. However, the potion has a 60% chance of failing midway through,\nwhich will reveal your plan to the monster, enraging it and causing the monster to start battle with 20% more health!\n";
     char upgDesc5[301] = "Iractus attempted to squirm his way out of a deal made with celestial deities and witnessed his homeworld get destroyed. As the sole survivor and cursed to wander the cosmos in solitude for eons,\ntake this potion infused with all his hatred and agony and increase the damage of power attacks by 20%!\n";
-    char upgDesc6[442] = "The benevolent Silvanus, king of the realm Sobek, detests hardship of any kind. Imprisoned by his 13 sons, who all perished due to infighting, for they all vied for his title.\nUpon returning, Silvanus held no hate in his heart and simply wished to feel the wind kiss his face and see flowers bloom. He takes pity on your suffering and hopes to ease your pain.\nReceive this elixir from his prized treasury and be given a new life upon death!\n"; 
+    char upgDesc6[448] = "The benevolent Silvanus, king of the realm Sobek, detests hardship of any kind. Imprisoned by his 13 sons, who all later perished due to infighting, for they all vied for his title.\nUpon returning, Silvanus held no hate in his heart and simply wished to feel the wind kiss his face and see flowers bloom. He takes pity on your suffering and hopes to ease your pain.\nReceive this elixir from his prized treasury and be given a new life upon death!\n"; 
     char upgDesc7[658] = "Meikai, ruler of the underworld, loves a gamble and craves a rich variety of souls. She has an abundance of human souls but few monster souls. Use this staff to summon her and strike a bargain.\nIf you die, Meikai will postpone your trip to the afterlife and grant you the state of Last Stand. With 1 health point, you will get 1 final chance to slay the monster.\nIf successful, Meikai will swap your souls, and the monster will take your place. You will be replenished with full health, and Meikai will drag the monster down to her domain!\nFail to finish off the creature, and be damned to the greuling depths of Meikai's making to suffer for all eternity\n";
-    char upgDesc8[540] = "The Istrians, a magical race from the dimension Olm. Every day the sun would lie its head to rest at sunset and awake at sunrise.\nOne night during its slumber, the Istrians snuck up and covered the sun in its bewitched blanket. This entrapped the sun in perpetual dormancy, and it never rose again,\nengulfing the entire dimension in darkness forever. Enchant your attack with this blanket, triggering the monster to sleep for one turn where it will do no damage to you!\n(To use this ability, add the letter b to your attack, ex: 1b or 1B)\n";
+    char upgDesc8[542] = "The Istrians, a magical race from the dimension Olm. Every day the sun would lie its head to rest at sunset and awake at sunrise.\nOne night during its slumber, the Istrians snuck up and covered the sun in their bewitched blanket. This entrapped the sun in perpetual dormancy, and it never rose again,\nengulfing the entire dimension in darkness forever. Enchant your attack with this blanket, triggering the monster to sleep for one turn where it will do no damage to you!\n(To use this ability, add the letter b to your attack, ex: 1b or 1B)\n";
     char upgDesc9[384] = "Ridiculed from birth for being born weakest in his clan, Avaritia trained and longed for power. He ascended to its leader, but his greed for control never diminished.\nHe ceaselessly expands his dominion solely using force and extends his arms to those who share his lust for power. Embrace his arms and gain an additional power attack,\nthough he'll eventually come for what's yours!\n";
     char upgDesc10[601] = "Keere, a primordial being, birthed her child Cappensis. Isolated for the majority of her existence, Keere felt joy raising her daughter. However, Cappensis was abducted and later killed,\nwith her corpse being discovered on the outer reaches of the realm of Cornix. Upon viewing her daughter's body, Keere's screams echoed across the universe as she vowed vengeance upon the assailants.\nCharring the body, as her pain was unbearable, she scours the universe to this day searching for the cutthroats. Cover yourself with the cursed ashes, which harm all monsters, reducing their starting\nhealth by 8%!\n";
+    char upgDesc11[885] = "Not much is known of the disgraced outlaw Hallog Latro. Wanted in every realm, he gained notoriety by performing brazen heists on high-profile individuals whose wealth stretched across dimensions.\nHis run-and-gun methodology, coupled with his elaborate theatrics during heists, became a spectacle for witnesses to behold while simultaneously thwarting the most sophisticated and complex security systems\ngalaxies had to offer. Tales of his infamous escapades spread throughout, reaching the far edges of the realms, and while copycats have sprung up, very few have managed to live up to his reputation.\nStill on the run, you never know where Hallog will strike next. Use this undetonated explosive device recovered from the scene of one of his crimes.\nAttach it onto monsters where you do no damage for 1 round, but after 2 turns the device will explode, unleashing 60 damage points!\n";
 
-    char *upgArr[10] = {upg1, upg2, upg3, upg4, upg5, upg6, upg7, upg8, upg9, upg10};
-    char *upgArrDesc[10] = {upgDesc1, upgDesc2, upgDesc3, upgDesc4, upgDesc5, upgDesc6, upgDesc7, upgDesc8, upgDesc9, upgDesc10};
+    char *upgArr[11] = {upg1, upg2, upg3, upg4, upg5, upg6, upg7, upg8, upg9, upg10, upg11};
+    char *upgArrDesc[11] = {upgDesc1, upgDesc2, upgDesc3, upgDesc4, upgDesc5, upgDesc6, upgDesc7, upgDesc8, upgDesc9, upgDesc10, upgDesc11};
 
     while (1){
         option1 = rand() % upgNumTotal;
@@ -1079,9 +1142,13 @@ int upgradeCheckpoint(struct upgrade *ptrUpg){
         printf("\n\n[1]\t\t\t%s\n%s\n[2]\t\t\t%s\n%s\n[3]\t\t\t%s\n%s\n[4]\t\t\tDecline All Upgrades\n\nChoose your Upgrade: ", *(upgArr + option1), *(upgArrDesc + option1), *(upgArr + option2), *(upgArrDesc + option2), *(upgArr + option3), *(upgArrDesc + option3));
         int input = getInput(upgSelect, sizeof(upgSelect), ptrUpg);
         
+        if (input == -1){
+            return -1;
+        }
         if (!input){
             continue;
         }
+
         switch(upgSelect[0] - '0'){
             case 1:
                 printf("\nUpgrade Added: %s\n", *(upgArr + option1));
@@ -1105,6 +1172,24 @@ void ashesDecayFunction(struct monster *mPtr, struct upgrade *upgPtr){
     int monsterHpDecr = mPtr->hp * (0.08 * upgPtr->ashesAtk);
     mPtr->hp -= monsterHpDecr;
     printf("\nThe curse of the ashes weakens the monster upon approach, dealing %d damage points!\n\n", monsterHpDecr);
+    return;
+}
+
+void explosiveFunction(struct monster* monsterPtr, struct upgrade* upgPtr){
+    if (!upgPtr->explosiveTimer){
+        (upgPtr->explosiveAtk)--;
+        upgPtr->explosiveTimer = 1;
+        printf("\nYou attach the device to the monster and the timer begins to tick down!\n");
+        return;
+    }
+
+    if (upgPtr->explosiveTimer == 3){
+        monsterPtr->hp -= 60;
+        upgPtr->explosiveTimer = 0;
+        printf("\n\nThe explosive has detonated dealing 60 damage points to the monster!\n\n");
+        return;
+    }
+    (upgPtr->explosiveTimer)++;
     return;
 }
 
