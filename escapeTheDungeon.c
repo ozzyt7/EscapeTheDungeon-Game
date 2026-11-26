@@ -1251,7 +1251,7 @@ int sneakAtkFunction(struct monster *mPtr, struct upgrade *upgPtr, char *monster
     }
     monsterHpIncr = mPtr->hp * 0.20;
     mPtr->hp += monsterHpIncr;
-    printf("\nYou use the potion and start to sneak past the monster. However, the potion wears off and the monster spots your attempt at deception! The creature becomes ENRAGED and starts the battle with %d more health points!\n", monsterHpIncr);
+    printf("\nYou use the potion and start to sneak past the monster. However, the potion wears off and the monster spots your attempt at deception!\nThe creature becomes ENRAGED and starts the battle with %d more health points!\n", monsterHpIncr);
     return 0;
 }
 
