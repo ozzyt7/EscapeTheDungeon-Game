@@ -129,7 +129,7 @@ int main(){
         struct player user = {120, 0, 10, 5, 30, 50, 30, 0}, *playerPtr = &user;
         struct monster firstM = {60, 10}, secondM = {120, 10}, thirdM = {200, 10}, fourthM = {260, 20}, fifthM = {340, 20};
         struct monster *m1 = &firstM, *m2 = &secondM, *m3 = &thirdM, *m4 = &fourthM, *m5 = &fifthM;
-        struct upgrade upgradeList = {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0}, *upgPtr = &upgradeList;
+        struct upgrade upgradeList = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, *upgPtr = &upgradeList;
         int upgSelected;
 
         firstBttl(playerPtr, m1, upgPtr);
@@ -1093,6 +1093,7 @@ void upgradeAdd(struct player *ptrPlayer, struct upgrade *ptrUpg, int upgInput){
             printf("\nConfidence and Coolness buff! All upgrades Declined!!\n\n");
             break;
         }
+        
         sleep(1);
     return;
 }
