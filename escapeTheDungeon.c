@@ -234,8 +234,8 @@ void preGame(){
     printf("\n\t\t\t  How To Play:\nThere are 5 monsters in the dungeon: 4 regular monsters and 1 boss monster.\nEnter 1 for basic attacks, 2 for power attacks and 3 for enhanced attacks. Basic attacks do 10 damage points and power attacks do 30 damage points.\n");
     printf("During each basic attack, there is a 10%% chance it becomes a critical hit, in which case the attack does double damage points.\nIf you get more than one critical hit in a single playthrough, your basic attack increases by 10 damage points for each critical hit.\n");
     printf("Enhanced attack allows you to deal 50 damage points, but you lose 30 total health including shield points.\nThe monsters deal between 10 to 30 damage points. You gain shield points for defeating monsters.\n");
-    printf("Between each battle there is a 10%% chance you stumble upon a health pack and gain extra health points. Also, between battles you reach checkpoints where you can unlock upgrades.\n");
-    printf("Upgrades have the chance of showing up at multiple checkpoints. If the same upgrade is chosen at different checkpoints, the effects stack and can continue to stack infinitely.\nUnlike with regular monsters, the boss monster has 2 phases where the creature's damage will increase.\n\n\n");
+    printf("Between each battle there is a 10%% chance you stumble upon a health pack and gain extra health points.\nAlso, between battles you reach checkpoints where you can unlock upgrades, which are made up of magical items scattered within the dungeon.");
+    printf("\nUpgrades have the chance of showing up at multiple checkpoints. If the same upgrade is chosen at different checkpoints, the effects stack and can continue to stack infinitely.\n\n\n");
 }
 
 
