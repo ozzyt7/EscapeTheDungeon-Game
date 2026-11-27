@@ -83,6 +83,11 @@ int main(){
     preGame();    
     int cap = 10;
     char *name = (char *)malloc(cap);
+    if (!name){
+        printf("\nError: Memory allocation failed.\n\n");
+        return 0;
+    }
+
     while (1){
         int len = 0;
         printf("Enter your username: ");
@@ -97,6 +102,7 @@ int main(){
                 cap *= 2;
                 char *tmp = (char *)realloc(name, cap);
                 if (!tmp) {
+                    printf("\nError: Realloc failed.\n\n");
                     free(name);
                     return 0;
                 }
@@ -234,7 +240,7 @@ void preGame(){
     printf("\n\t\t\t  How To Play:\nThere are 5 monsters in the dungeon: 4 regular monsters and 1 boss monster.\nEnter 1 for basic attacks, 2 for power attacks and 3 for enhanced attacks. Basic attacks do 10 damage points and power attacks do 30 damage points.\n");
     printf("During each basic attack, there is a 10%% chance it becomes a critical hit, in which case the attack does double damage points.\nIf you get more than one critical hit in a single playthrough, your basic attack increases by 10 damage points for each critical hit.\n");
     printf("Enhanced attack allows you to deal 50 damage points, but you lose 30 total health including shield points.\nThe monsters deal between 10 to 30 damage points. You gain shield points for defeating monsters.\n");
-    printf("Between each battle there is a 10%% chance you stumble upon a health pack and gain extra health points.\nAlso, between battles you reach checkpoints where you can unlock upgrades, which are made up of magical items scattered within the dungeon.");
+    printf("Between each battle there is a 10%% chance you stumble upon a health pack and gain extra health points.\nAlso, between battles you reach checkpoints where you can unlock upgrades, which are made up of magical items littered within the dungeon.");
     printf("\nUpgrades have the chance of showing up at multiple checkpoints. If the same upgrade is chosen at different checkpoints, the effects stack and can continue to stack infinitely.\n\n\n");
 }
 
@@ -964,7 +970,7 @@ int upgradeCheckpoint(struct upgrade *ptrUpg){
     char upgDesc8[542] = "The Istrians, a magical race from the dimension Olm. Every day the sun would lie its head to rest at sunset and awake at sunrise.\nOne night during its slumber, the Istrians snuck up and covered the sun in their bewitched blanket. This entrapped the sun in perpetual dormancy, and it never rose again,\nengulfing the entire dimension in darkness forever. Enchant your attack with this blanket, triggering the monster to sleep for one turn where it will do no damage to you!\n(To use this ability, add the letter b to your attack, ex: 1b or 1B)\n";
     char upgDesc9[384] = "Ridiculed from birth for being born weakest in his clan, Avaritia trained and longed for power. He ascended to its leader, but his greed for control never diminished.\nHe ceaselessly expands his dominion solely using force and extends his arms to those who share his lust for power. Embrace his arms and gain an additional power attack,\nthough he'll eventually come for what's yours!\n";
     char upgDesc10[601] = "Keere, a primordial being, birthed her child Cappensis. Isolated for the majority of her existence, Keere felt joy raising her daughter. However, Cappensis was abducted and later killed,\nwith her corpse being discovered on the outer reaches of the realm of Cornix. Upon viewing her daughter's body, Keere's screams echoed across the universe as she vowed vengeance upon the assailants.\nCharring the body, as her pain was unbearable, she scours the universe to this day searching for the cutthroats. Cover yourself with the cursed ashes, which harm all monsters, reducing their starting\nhealth by 8%!\n";
-    char upgDesc11[885] = "Not much is known of the disgraced outlaw Hallog Latro. Wanted in every realm, he gained notoriety by performing brazen heists on high-profile individuals whose wealth stretched across dimensions.\nHis run-and-gun methodology, coupled with his elaborate theatrics during heists, became a spectacle for witnesses to behold while simultaneously thwarting the most sophisticated and complex security systems\ngalaxies had to offer. Tales of his infamous escapades spread throughout, reaching the far edges of the realms, and while copycats have sprung up, very few have managed to live up to his reputation.\nStill on the run, you never know where Hallog will strike next. Use this undetonated explosive device recovered from the scene of one of his crimes.\nAttach it onto monsters where you do no damage for 1 round, but after 2 turns the device will explode, unleashing 60 damage points!\n";
+    char upgDesc11[883] = "Little is known of the disgraced outlaw Hallog Latro. Wanted in every realm, he gained notoriety by performing brazen heists on high-profile individuals whose wealth stretched across dimensions.\nHis run-and-gun methodology, coupled with his elaborate theatrics during heists, became a spectacle for witnesses to behold while simultaneously thwarting the most sophisticated and complex security systems\ngalaxies had to offer. Tales of his infamous escapades spread throughout, reaching the far edges of the realms, and while copycats have sprung up, very few have managed to live up to his reputation.\nStill on the run, you never know where Hallog will strike next. Use this undetonated explosive device recovered from the scene of one of his crimes.\nAttach it onto monsters where you do no damage for 1 round, but after 2 turns the device will explode, unleashing 60 damage points!\n";
 
     char *upgArr[11] = {upg1, upg2, upg3, upg4, upg5, upg6, upg7, upg8, upg9, upg10, upg11};
     char *upgArrDesc[11] = {upgDesc1, upgDesc2, upgDesc3, upgDesc4, upgDesc5, upgDesc6, upgDesc7, upgDesc8, upgDesc9, upgDesc10, upgDesc11};
