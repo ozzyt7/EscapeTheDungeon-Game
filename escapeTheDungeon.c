@@ -33,13 +33,14 @@ struct upgrade {
 struct monster {
     int hp;
     int dmg;
+    int monsterNum;
+    int shieldIncrOnDeath; 
+    char *monsterMsg[5];
+
 };
 
 void preGame();
-int firstBttl(struct player*, struct monster*, struct upgrade*);
-int secondBttl(struct player*, struct monster*, struct upgrade*);
-int thirdBttl(struct player*, struct monster*, struct upgrade*); 
-int fourthBttl(struct player*, struct monster*, struct upgrade*);
+int battleFunction(struct player*, struct monster*, struct upgrade*);
 int fifthBttl(struct player*, struct monster*, struct upgrade*);
 
 int playAgain();
@@ -127,13 +128,33 @@ int main(){
 
     while (1){
         struct player user = {120, 0, 10, 5, 30, 50, 30, 0}, *playerPtr = &user;
-        struct monster firstM = {60, 10}, secondM = {120, 10}, thirdM = {200, 10}, fourthM = {260, 20}, fifthM = {340, 20};
+        struct monster firstM = {60, 10, 1, 30}, secondM = {120, 10, 2, 50}, thirdM = {200, 10, 3, 100}, fourthM = {260, 20, 4, 150}, fifthM = {340, 20, 5};
         struct monster *m1 = &firstM, *m2 = &secondM, *m3 = &thirdM, *m4 = &fourthM, *m5 = &fifthM;
         struct upgrade upgradeList = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, *upgPtr = &upgradeList;
         int upgSelected;
 
-        firstBttl(playerPtr, m1, upgPtr);
+        char m1FirstMsg[60] = "UGH, THERE'S MORE OF YOU? FINE, I'LL DEAL WITH YOU QUICKLY!", m1DeathMsg[59] = "WAIT, I'M DYING! WHAT, I WAS BESTED?! NO, THIS CAN'T BE!!!";
+        char m1NameTag[20] = "ESTREED THE ANGULAR", m1Name[20] = "Estreed The Angular";
+        m1->monsterMsg[0] = m1NameTag, m1->monsterMsg[1] = m1Name, m1->monsterMsg[2] = m1FirstMsg, m1->monsterMsg[3] = m1DeathMsg;
 
+        char m2FirstMsg[52] = "HAHA!! WHAT PUNY HUMAN THINKS HE CAN CHALLENGE ME?!", m2DeathMsg[44] = "IMPOSSIBLE!! HOW COULD THIS HAPPEN TO ME!!!";
+        char m2NameTag[18] = "REGIS THE TWISTED", m2UsrDthMsg[68] = "FOOLISH MORTAL! I PITY YOUR SIMPLE-MINDEDNESS!! I DIDN'T EVEN TRY!!", m2Name[18] = "Regis The Twisted";
+        m2->monsterMsg[0] = m2NameTag, m2->monsterMsg[1] = m2Name, m2->monsterMsg[2] = m2FirstMsg, m2->monsterMsg[3] = m2DeathMsg, m2->monsterMsg[4] = m2UsrDthMsg;
+
+        char m3FirstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", m3DeathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!";
+        char m3NameTag[22] = "GROOOB THE INSATIABLE", m3UsrDthMsg[69] = "MINE! MINE! YOU'RE ALL MINEEEEEEE!! I WILL SAVOUR THIS TENDER MEAT!!", m3Name[22] = "Grooob The Insatiable";
+        m3->monsterMsg[0] = m3NameTag, m3->monsterMsg[1] = m3Name, m3->monsterMsg[2] = m3FirstMsg, m3->monsterMsg[3] = m3DeathMsg, m3->monsterMsg[4] = m3UsrDthMsg;
+
+        char m4FirstMsg[114] = "A-HUMPH! HOW DARE A MERE HUMAN TRY TO MEASURE UP TO THE LIKES OF ME! YOU AREN'T WORTHY OF BEING IN MY PRESENCE!", m4UsrDthMsg[84] = "KNOW YOUR PLACE MAGGOT!! JUST THE THOUGHT OF THESE FEEBLE BEINGS ASSAULTS MY BRAIN!";
+        char m4NameTag[20] = "GILTSPUR THE MIGHTY", m4DeathMsg[108] = "OUTRAGEOUS!!! YOU WILL RUE THIS DAY EARTHLING, I SWEAR IT!! I WILL RISE AGAIN! THE MIGHTY WILL NEVER FALL!!", m4Name[20] = "Giltspur The Mighty";
+        m4->monsterMsg[0] = m4NameTag, m4->monsterMsg[1] = m4Name, m4->monsterMsg[2] = m4FirstMsg, m4->monsterMsg[3] = m4DeathMsg, m4->monsterMsg[4] = m4UsrDthMsg;
+
+        char m5FirstMsg[90] = "WHAT'S THIS, YOU SUBDUED THE OTHERS?! HOW INTERESTING, YOU CAME THIS FAR JUST TO LOSE!!", m5DeathMsg[106] = "RAAAAAAHHH!! INCONCEIVABLE! CURSE THOSE INSOLENT CREATURES FOR NOT STOPPING YOU, CAUSING THIS TRAVESTY!!!";
+        char m5NameTag[22] = "BLUGGARD THE WRETCHED", m5UsrDthMsg[89] = "THIS WAS QUITE ENTERTAINING! IT WAS A VALIANT EFFORT! STAND PROUD HUMAN YOU ARE STRONG!!", m5Name[22] = "Bluggard The Wretched";
+        m5->monsterMsg[0] = m5NameTag, m5->monsterMsg[1] = m5Name, m5->monsterMsg[2] = m5FirstMsg, m5->monsterMsg[3] = m5DeathMsg, m5->monsterMsg[4] = m5UsrDthMsg;
+
+
+        battleFunction(playerPtr, m1, upgPtr);
 	    extraHp(playerPtr, upgPtr, 30);
         upgSelected = upgradeCheckpoint(upgPtr);
         if (upgSelected == -1){
@@ -142,7 +163,7 @@ int main(){
         upgradeAdd(playerPtr, upgPtr, upgSelected);
         sleep(2);
 
-        int secondPhase = secondBttl(playerPtr, m2, upgPtr);
+        int secondPhase = battleFunction(playerPtr, m2, upgPtr);
         if (!secondPhase){
             break;
         }
@@ -157,7 +178,7 @@ int main(){
         upgradeAdd(playerPtr, upgPtr, upgSelected);
         sleep(2);
 
-	    int thirdPhase = thirdBttl(playerPtr, m3, upgPtr);
+	    int thirdPhase = battleFunction(playerPtr, m3, upgPtr);
         if (!thirdPhase){
 	        break;
 	    }
@@ -172,7 +193,7 @@ int main(){
         upgradeAdd(playerPtr, upgPtr, upgSelected);
         sleep(2);
 
-        int fourthPhase = fourthBttl(playerPtr, m4, upgPtr);
+        int fourthPhase = battleFunction(playerPtr, m4, upgPtr);
         if (!fourthPhase){
         break;
         }
@@ -217,70 +238,44 @@ void preGame(){
     printf("Upgrades have the chance of showing up at multiple checkpoints. If the same upgrade is chosen at different checkpoints, the effects stack and can continue to stack infinitely.\nUnlike with regular monsters, the boss monster has 2 phases where the creature's damage will increase.\n\n\n");
 }
 
-//Suppose to be beginner monster for user to learn game so impossible for user to die in first battle so no checking for hp < 0
-int firstBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgrade *ptrUpg) {
-    int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 2, shieldIncr = 30, monsterNum = 1;
-    char inputArr[4], firstMsg[60] = "UGH, THERE'S MORE OF YOU? FINE, I'LL DEAL WITH YOU QUICKLY!", deathMsg[59] = "WAIT, I'M DYING! WHAT, I WAS BESTED?! NO, THIS CAN'T BE!!!", name[20] = "ESTREED THE ANGULAR";
 
-    printf("\nThe First Monster Approaches\n");
-    sleep(1);
-
-    while (1){
-        displayName(monsterNum, name);
-	    displayHpBar(maxHp, monsterNum, monsterPtr);
-        firstMonsterDisplay();
-        if (firstMsgDisplay){
-	        displayMsg(monsterNum, firstMsg);
-            firstMsgDisplay--;	
-        }
-
-        printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", ptrPlayer->hp, ptrPlayer->shield, ptrPlayer->pw);
-        printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
-	    int input = getInput(inputArr, sizeof(inputArr), ptrUpg);
-	    if (input == -1){
-	        return 0;
-	    }
-	    if (!input){
-            sleep(1);
-            continue;
-        }
-        if (!atkFunction(inputArr[0] - '0', ptrPlayer, monsterPtr, ptrUpg)){
-            sleep(1);
-            continue;
-        }
-
-        sleep(1);
-        if (monsterPtr->hp <= 0){
-            monsterPtr->hp = 0;
-            displayName(monsterNum, name);
-	        displayHpBar(maxHp, monsterNum, monsterPtr);
-            firstMonsterDisplayDeath();
-	        displayMsg(monsterNum, deathMsg);
-            ptrPlayer->shield += shieldIncr;
-            printf("\nYou defeated Estreed The Angular! You gained %d shield points!\n\n", shieldIncr);
-	        sleep(3);
-            return 2;
-        }
-
-        dmgTakenFunction(inputArr[1], ptrPlayer, monsterPtr, ptrUpg);
-        sleep(1);
+int battleFunction(struct player *ptrPlayer, struct monster *monsterPtr, struct upgrade *ptrUpg){
+    int firstMsgDisplay = 1, maxHp;
+    char inputArr[4];
+    
+    if (monsterPtr->monsterNum == 1){
+        maxHp = monsterPtr->hp / 2;
     }
-}
-
-int secondBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgrade *ptrUpg){
-    int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, shieldIncr = 50, monsterNum = 2;
-    char inputArr[4], firstMsg[52] = "HAHA!! WHAT PUNY HUMAN THINKS HE CAN CHALLENGE ME?!", deathMsg[44] = "IMPOSSIBLE!! HOW COULD THIS HAPPEN TO ME!!!";
-    char name[18] = "REGIS THE TWISTED", usrDthMsg[68] = "FOOLISH MORTAL! I PITY YOUR SIMPLE-MINDEDNESS!! I DIDN'T EVEN TRY!!";
-
-    printf("\nThe Second Monster Approaches\n");
+    else{
+        maxHp = monsterPtr->hp / 4;
+    }
+    switch(monsterPtr->monsterNum){
+        case 1:
+            printf("\nThe First Monster Approaches\n");
+            break;
+        case 2:
+            printf("\nThe Second Monster Approaches\n");
+            break;
+        case 3:
+            printf("\nThe Third Monster Approaches\n");
+            break;
+        default:
+            printf("\nThe Fourth Monster Approaches\n");
+            break;
+    }
     sleep(1);
 
     if (ptrUpg->isSneakAtk){
-        if (sneakAtkFunction(monsterPtr, ptrUpg, name, deathMsg, monsterNum, maxHp)){
+        if (sneakAtkFunction(monsterPtr, ptrUpg, monsterPtr->monsterMsg[0], monsterPtr->monsterMsg[3], monsterPtr->monsterNum, maxHp)){
             sleep(2);
             return 2;
         }
-        maxHp = monsterPtr->hp / 4;
+        if (monsterPtr->monsterNum == 1){
+            maxHp = monsterPtr->hp / 2;
+        }
+        else{
+            maxHp = monsterPtr->hp / 4;
+        }
         sleep(2);
     }
     if (ptrUpg->ashesAtk){
@@ -289,11 +284,25 @@ int secondBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
     }
     
     while (1){
-        displayName(monsterNum, name);
-	    displayHpBar(maxHp, monsterNum, monsterPtr);
-        secondMonsterDisplay();
+        displayName(monsterPtr->monsterNum, monsterPtr->monsterMsg[0]);
+	    displayHpBar(maxHp, monsterPtr->monsterNum, monsterPtr);
+        switch(monsterPtr->monsterNum){
+        case 1:
+            firstMonsterDisplay();
+            break;
+        case 2:
+            secondMonsterDisplay();
+            break;
+        case 3:
+            thirdMonsterDisplay();
+            break;
+        default:
+            fourthMonsterDisplay();
+            break;
+        }
+
         if (firstMsgDisplay){
-	        displayMsg(monsterNum, firstMsg);
+	        displayMsg(monsterPtr->monsterNum, monsterPtr->monsterMsg[2]);
             firstMsgDisplay--;
         }
 
@@ -308,7 +317,7 @@ int secondBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
                 sleep(2);
                 continue;
 		    }
-	        displayMsg(monsterNum, usrDthMsg);
+	        displayMsg(monsterPtr->monsterNum, monsterPtr->monsterMsg[4]);
             break;
         }
         
@@ -343,12 +352,25 @@ int secondBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
             }
             monsterPtr->hp = 0;
             ptrUpg->explosiveTimer = 0;
-            displayName(monsterNum, name);
-	        displayHpBar(maxHp, monsterNum, monsterPtr);
- 	        secondMonsterDisplayDeath();
-            displayMsg(monsterNum, deathMsg);
-            ptrPlayer->shield += shieldIncr + ptrUpg->shieldBuff;
-            printf("\nYou defeated Regis The Twisted! You gained %d shield points!\n\n", shieldIncr + ptrUpg->shieldBuff);
+            displayName(monsterPtr->monsterNum, monsterPtr->monsterMsg[0]);
+	        displayHpBar(maxHp, monsterPtr->monsterNum, monsterPtr);
+ 	        switch(monsterPtr->monsterNum){
+            case 1:
+                firstMonsterDisplayDeath();
+                break;
+            case 2:
+                secondMonsterDisplayDeath();
+                break;
+            case 3:
+                thirdMonsterDisplayDeath();
+                break;
+            default:
+                fourthMonsterDisplayDeath();
+                break;
+            }
+            displayMsg(monsterPtr->monsterNum, monsterPtr->monsterMsg[3]);
+            ptrPlayer->shield += monsterPtr->shieldIncrOnDeath + ptrUpg->shieldBuff;
+            printf("\nYou defeated %s! You gained %d shield points!\n\n", monsterPtr->monsterMsg[1], monsterPtr->shieldIncrOnDeath + ptrUpg->shieldBuff);
 	        sleep(3);
             return 2;        
         }   
@@ -359,195 +381,14 @@ int secondBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgr
    return playAgain();
 }
 
-int thirdBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgrade *ptrUpg){
-    int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, shieldIncr = 100, monsterNum = 3;
-    char inputArr[4], firstMsg[63] = "OOOOHH HEHEEEE!! HOW DELICIOUS, MORE FLESH FOR ME TO CONSUME!!", deathMsg[50] = "NOOOOOO!! MY FOOD!! YOU WOULD'VE BEEN SO TASTY!!!";
-    char name[22] = "GROOOB THE INSATIABLE", usrDthMsg[69] = "MINE! MINE! YOU'RE ALL MINEEEEEEE!! I WILL SAVOUR THIS TENDER MEAT!!";
-
-    printf("\nThe Third Monster Approaches\n");
-    sleep(1);         
-    if (ptrUpg->isSneakAtk){
-        if (sneakAtkFunction(monsterPtr, ptrUpg, name, deathMsg, monsterNum, maxHp)){
-            sleep(2);
-            return 2;
-        }
-        maxHp = monsterPtr->hp / 4;
-        sleep(2);
-    }
-    if (ptrUpg->ashesAtk){
-        ashesDecayFunction(monsterPtr, ptrUpg);
-        sleep(2);
-    }
-
-    while (1){
-        displayName(monsterNum, name);
-	    displayHpBar(maxHp, monsterNum, monsterPtr);
-	    thirdMonsterDisplay();
-
-        if (firstMsgDisplay){
-            displayMsg(monsterNum, firstMsg);
-            firstMsgDisplay--;
-        }
-        if (ptrPlayer->hp <= 0){
-		    if (ptrUpg->lastStand){
-		        lastStandFunction(ptrPlayer, ptrUpg);
-                sleep(2);
-		        continue;
-		    }
-		    if (ptrUpg->newLife){
-                extraLife(ptrPlayer, ptrUpg);
-                sleep(2);
-                continue;
-		    }
-	        displayMsg(monsterNum, usrDthMsg);
-            break;
-        }
-
-        printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", ptrPlayer->hp, ptrPlayer->shield, ptrPlayer->pw);
-        if (ptrUpg->explosiveAtk){
-            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Wolfram Psora Device\n\nChoose your attack: ");
-        }
-        else{
-            printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
-        }
-        int input = getInput(inputArr, sizeof(inputArr), ptrUpg);
-        if (input == -1){
-            return 0;
-        }
-        if (!input){
-            sleep(2);
-            continue;
-        }
-        if (!atkFunction(inputArr[0] - '0', ptrPlayer, monsterPtr, ptrUpg)){
-            sleep(2);
-            continue;
-        }
-        if (ptrUpg->explosiveTimer){
-            explosiveFunction(monsterPtr, ptrUpg);
-        }
-        sleep(1);
-   
-        if (monsterPtr->hp <= 0){
-            if (ptrUpg->isLastStandSuccess){
-                lastStandSuccessFunction(ptrPlayer, ptrUpg);
-                sleep(2);
-            }
-            monsterPtr->hp = 0;
-            ptrUpg->explosiveTimer = 0;
-            displayName(monsterNum, name);
- 	        displayHpBar(maxHp, monsterNum, monsterPtr);
-	        thirdMonsterDisplayDeath();
-            displayMsg(monsterNum, deathMsg);
-	        ptrPlayer->shield += shieldIncr + ptrUpg->shieldBuff;
-            printf("\nYou defeated Grooob The Insatiable! You gained %d shield points!\n\n", shieldIncr + ptrUpg->shieldBuff);
-            sleep(3);
-            return 2;
-        }             
-        dmgTakenFunction(inputArr[1], ptrPlayer, monsterPtr, ptrUpg);
-        sleep(1);
-    }
-    return playAgain();
-
-}
-
-int fourthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgrade *ptrUpg){
-    int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, shieldIncr = 150, monsterNum = 4;
-    char firstMsg[114] = "A-HUMPH! HOW DARE A MERE HUMAN TRY TO MEASURE UP TO THE LIKES OF ME! YOU AREN'T WORTHY OF BEING IN MY PRESENCE!", usrDthMsg[84] = "KNOW YOUR PLACE MAGGOT!! JUST THE THOUGHT OF THESE FEEBLE BEINGS ASSAULTS MY BRAIN!";
-    char inputArr[4], name[20] = "GILTSPUR THE MIGHTY", deathMsg[108] = "OUTRAGEOUS!!! YOU WILL RUE THIS DAY EARTHLING, I SWEAR IT!! I WILL RISE AGAIN! THE MIGHTY WILL NEVER FALL!!";
-                
-    printf("\nThe Fourth Monster Approaches\n");
-    sleep(1);  
-    if (ptrUpg->isSneakAtk){
-        if (sneakAtkFunction(monsterPtr, ptrUpg, name, deathMsg, monsterNum, maxHp)){
-            sleep(2);
-            return 2;
-        }
-        maxHp = monsterPtr->hp / 4;
-        sleep(2);
-    }
-    if(ptrUpg->ashesAtk){
-        ashesDecayFunction(monsterPtr, ptrUpg);
-        sleep(2);
-    }
-
-    while (1){
-        displayName(monsterNum, name);
-        displayHpBar(maxHp, monsterNum, monsterPtr);
-        fourthMonsterDisplay();
-        if (firstMsgDisplay){
-            displayMsg(monsterNum, firstMsg);
-            firstMsgDisplay--;
-        }       
-        if (ptrPlayer->hp <= 0){
-		    if (ptrUpg->lastStand){
-		        lastStandFunction(ptrPlayer, ptrUpg);
-                sleep(2);
-		        continue;
-		    }
-		    if (ptrUpg->newLife){
-                extraLife(ptrPlayer, ptrUpg);
-                sleep(2);
-                continue;
-		    }
-	        displayMsg(monsterNum, usrDthMsg);
-            break;
-        }
-        printf("\nHealth: %d \t Shield: %d \t Power Attacks: %d\n", ptrPlayer->hp, ptrPlayer->shield, ptrPlayer->pw);
-        if (ptrUpg->explosiveAtk){
-            printf("[1] Basic Attack\t[2] Power Attack\t[3] Enhanced Attack\t[4] Wolfram Psora Device\n\nChoose your attack: ");
-        }
-        else{
-            printf("[1] Basic Attack \t [2] Power Attack \t [3] Enhanced Attack\n\nChoose your attack: ");
-        }
-        int input = getInput(inputArr, sizeof(inputArr), ptrUpg);
-        if (input == -1){
-            return 0;
-        }
-        if (!input){
-            sleep(2);
-            continue;
-        }       
-        if (!atkFunction(inputArr[0] - '0', ptrPlayer, monsterPtr, ptrUpg)){
-            sleep(2);
-            continue;
-        }
-        if (ptrUpg->explosiveTimer){
-            explosiveFunction(monsterPtr, ptrUpg);
-        }
-        sleep(1);
-    
-       if (monsterPtr->hp <= 0){
-            if (ptrUpg->isLastStandSuccess){
-                lastStandSuccessFunction(ptrPlayer, ptrUpg);
-                sleep(2);
-            }
-            monsterPtr->hp = 0;
-            ptrUpg->explosiveTimer = 0;
-            displayName(monsterNum, name);
-            displayHpBar(maxHp, monsterNum, monsterPtr);
-            fourthMonsterDisplayDeath();
-            displayMsg(monsterNum, deathMsg);
-            ptrPlayer->shield += shieldIncr + ptrUpg->shieldBuff;
-            printf("\nYou defeated Giltspur The Mighty! You gained %d shield points!\n\n", shieldIncr + ptrUpg->shieldBuff);
-            sleep(3);
-            return 2;
-        }
-       dmgTakenFunction(inputArr[1], ptrPlayer, monsterPtr, ptrUpg);
-       sleep(1);
-   }
-   return playAgain();
-
-}
-
 int fifthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgrade *ptrUpg){
-    int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, secondPhaseDisplay = 1, secondPhaseTrigger = 0, monsterNum = 5;
-    char firstMsg[90] = "WHAT'S THIS, YOU SUBDUED THE OTHERS?! HOW INTERESTING, YOU CAME THIS FAR JUST TO LOSE!!", deathMsg[106] = "RAAAAAAHHH!! INCONCEIVABLE! CURSE THOSE INSOLENT CREATURES FOR NOT STOPPING YOU, CAUSING THIS TRAVESTY!!!";
-    char inputArr[4], name[22] = "BLUGGARD THE WRETCHED", usrDthMsg[89] = "THIS WAS QUITE ENTERTAINING! IT WAS A VALIANT EFFORT! STAND PROUD HUMAN YOU ARE STRONG!!", phase2Msg[77] = "IT SEEMS I UNDERESTIMATED YOUR ABILITY!! YOU'VE FORCED ME TO PUT MY ALL IN!!";
+    int firstMsgDisplay = 1, maxHp = monsterPtr->hp / 4, secondPhaseDisplay = 1, secondPhaseTrigger = 0;
+    char inputArr[4], phase2Msg[77] = "IT SEEMS I UNDERESTIMATED YOUR ABILITY!! YOU'VE FORCED ME TO PUT MY ALL IN!!";
                 
     printf("\nThe Final Monster Approaches\n");  
     sleep(1);
     if (ptrUpg->isSneakAtk){
-        if (sneakAtkFunction(monsterPtr, ptrUpg, name, deathMsg, monsterNum, maxHp)){
+        if (sneakAtkFunction(monsterPtr, ptrUpg, monsterPtr->monsterMsg[0], monsterPtr->monsterMsg[3], monsterPtr->monsterNum, maxHp)){
             sleep(2);
             return 2;
         }
@@ -560,8 +401,8 @@ int fifthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
     }
 
     while (1){
-        displayName(monsterNum, name);
-        displayHpBar(maxHp, monsterNum, monsterPtr);
+        displayName(monsterPtr->monsterNum, monsterPtr->monsterMsg[0]);
+        displayHpBar(maxHp, monsterPtr->monsterNum, monsterPtr);
         if (monsterPtr->hp > 170){
 	        fifthMonsterDisplayP1();
 	    }
@@ -570,11 +411,11 @@ int fifthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
             secondPhaseTrigger++;
 	    }  
         if (firstMsgDisplay){
-            displayMsg(monsterNum, firstMsg);
+            displayMsg(monsterPtr->monsterNum, monsterPtr->monsterMsg[2]);
             firstMsgDisplay--;
         }
         if (secondPhaseTrigger && secondPhaseDisplay){ 
-            displayMsg(monsterNum, phase2Msg);
+            displayMsg(monsterPtr->monsterNum, phase2Msg);
             monsterPtr->dmg = 30;
             printf("\n\nBluggard is ENRAGED!!! He fully comes alive and now deals 30 damage points!\n\n");
             secondPhaseDisplay--;
@@ -590,7 +431,7 @@ int fifthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
                 sleep(2);
                 continue;
 		    }
-	        displayMsg(monsterNum, usrDthMsg);
+	        displayMsg(monsterPtr->monsterNum, monsterPtr->monsterMsg[4]);
             break;
         }
                     
@@ -625,11 +466,11 @@ int fifthBttl(struct player *ptrPlayer, struct monster *monsterPtr, struct upgra
             }
             monsterPtr->hp = 0;
             ptrUpg->explosiveTimer = 0;
-            displayName(monsterNum, name);
-            displayHpBar(maxHp, monsterNum, monsterPtr);
+            displayName(monsterPtr->monsterNum, monsterPtr->monsterMsg[0]);
+            displayHpBar(maxHp, monsterPtr->monsterNum, monsterPtr);
             fifthMonsterDisplayDeathP2();
-            displayMsg(monsterNum, deathMsg);
-            printf("\nYou defeated Bluggard The Wretched!\n\n\n");
+            displayMsg(monsterPtr->monsterNum, monsterPtr->monsterMsg[3]);
+            printf("\nYou defeated %s!\n\n\n", monsterPtr->monsterMsg[1]);
             sleep(4);
             return 2;
         }
